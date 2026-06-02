@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경남 빈집·청년주거 매칭 분석 대시보드</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary:    #ffffff;
+    --bg-secondary:  #f5f4f0;
+    --bg-tertiary:   #eeede9;
+    --bg-info:       #e6f1fb;
+    --bg-warning:    #faeeda;
+    --bg-success:    #e1f5ee;
+    --text-primary:  #1a1a18;
+    --text-secondary:#5f5e5a;
+    --text-tertiary: #888780;
+    --text-info:     #185fa5;
+    --text-warning:  #854f0b;
+    --text-success:  #0f6e56;
+    --border-light:  rgba(0,0,0,0.10);
+    --border-mid:    rgba(0,0,0,0.18);
+    --border-info:   #b5d4f4;
+    --border-warning:#fac775;
+    --radius-md:     8px;
+    --radius-lg:     12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Malgun Gothic', '맑은 고딕', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: #f0efe9;
+    color: var(--text-primary);
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    background: var(--bg-primary);
+    border-radius: 16px;
+    border: 0.5px solid var(--border-mid);
+    padding: 24px;
+  }
+
+  .page-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+  .page-sub {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-bottom: 20px;
+  }
+
+  /* 탭 */
+  .tab-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-light);
+    padding-bottom: 12px;
+  }
+  .tab {
+    padding: 5px 14px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-mid);
+    background: none;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .tab:hover { background: var(--bg-secondary); color: var(--text-primary); }
+  .tab.active { background: var(--bg-secondary); color: var(--text-primary); border-color: rgba(0,0,0,0.3); font-weight: 500; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* 그리드 */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  @media (max-width: 600px) {
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+  }
+
+  /* 카드 */
+  .card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+  }
+  .card-title { font-size: 13px; font-weight: 500; margin-bottom: 10px; color: var(--text-primary); }
+
+  /* 메트릭 카드 */
+  .metric-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    text-align: center;
+  }
+  .metric-val { font-size: 22px; font-weight: 500; color: var(--text-primary); }
+  .metric-lbl { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+
+  /* 배지 */
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .b-supply  { background: #e1f5ee; color: #0f6e56; }
+  .b-demand  { background: #e6f1fb; color: #185fa5; }
+  .b-price   { background: #faeeda; color: #854f0b; }
+  .b-welfare { background: #eeedfe; color: #3c3489; }
+  .b-infra   { background: #faece7; color: #993c1d; }
+
+  /* 알림 박스 */
+  .warn-box {
+    background: var(--bg-warning);
+    border: 0.5px solid var(--border-warning);
+    border-radius: var(--radius-md);
+    padding: 9px 13px;
+    font-size: 12px;
+    color: var(--text-warning);
+    margin: 8px 0;
+    line-height: 1.5;
+  }
+  .info-box {
+    background: var(--bg-info);
+    border: 0.5px solid var(--border-info);
+    border-radius: var(--radius-md);
+    padding: 9px 13px;
+    font-size: 12px;
+    color: var(--text-info);
+    margin: 8px 0;
+    line-height: 1.5;
+  }
+
+  /* 파일 행 */
+  .file-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border-light);
+  }
+  .file-row:last-child { border-bottom: none; }
+  .file-name  { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .file-meta  { font-size: 12px; color: var(--text-secondary); margin-top: 3px; }
+  .file-issue { font-size: 11px; color: #854f0b; margin-top: 3px; }
+
+  /* 컬럼 태그 */
+  .tag-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+  .col-tag {
+    display: inline-block;
+    padding: 2px 7px;
+    background: var(--bg-secondary);
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+
+  /* 분석 스텝 */
+  .step-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 0.5px solid var(--border-light);
+  }
+  .step-row:last-of-type { border-bottom: none; }
+  .step-num {
+    display: inline-flex;
+    width: 22px; height: 22px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .analysis-item {
+    flex: 1;
+    padding: 10px 13px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-light);
+    background: var(--bg-primary);
+  }
+  .analysis-title { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .analysis-desc  { font-size: 12px; color: var(--text-secondary); margin-top: 5px; line-height: 1.55; }
+  .analysis-src   { font-size: 11px; color: var(--text-tertiary); margin-top: 7px; }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 12px 0 5px;
+  }
+
+  .cta-btn {
+    margin-top: 14px;
+    width: 100%;
+    padding: 11px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border-mid);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    font-size: 13px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    transition: background .15s;
+  }
+  .cta-btn:hover { background: var(--bg-tertiary); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="page-title">경남 빈집·청년주거 매칭 분석 대시보드</div>
+  <div class="page-sub">18개 파일 · 약 48만 행 · 경상남도 전체</div>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="show('overview', this)">전체 요약</button>
+    <button class="tab" onclick="show('supply', this)">공급 — 빈집</button>
+    <button class="tab" onclick="show('demand', this)">수요 — 인구</button>
+    <button class="tab" onclick="show('price', this)">가격 — 임대</button>
+    <button class="tab" onclick="show('welfare', this)">복지 — 인프라</button>
+    <button class="tab" onclick="show('analysis', this)">분석 로드맵</button>
+  </div>
+
+  <!-- 전체 요약 -->
+  <div id="panel-overview" class="panel active">
+    <div class="grid3" style="margin-bottom:14px">
+      <div class="metric-card"><div class="metric-val">18개</div><div class="metric-lbl">총 파일 수</div></div>
+      <div class="metric-card"><div class="metric-val">~48만행</div><div class="metric-lbl">총 데이터 행수</div></div>
+      <div class="metric-card"><div class="metric-val">11개 시군</div><div class="metric-lbl">빈집 개별 데이터</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">카테고리별 파일 구성</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge b-supply">공급·빈집</span>
+            <span style="font-size:12px;color:#5f5e5a">12개 파일 (시군별 통계 1 + 개별 11)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge b-demand">수요·인구</span>
+            <span style="font-size:12px;color:#5f5e5a">3개 파일 (전입·전출·생활인구)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge b-price">가격·임대</span>
+            <span style="font-size:12px;color:#5f5e5a">1개 파일 (연립다세대 전월세)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge b-welfare">복지·고용</span>
+            <span style="font-size:12px;color:#5f5e5a">1개 파일 (청년고용률)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge b-infra">인프라</span>
+            <span style="font-size:12px;color:#5f5e5a">1개 파일 (어린이집 현황)</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">핵심 주의사항</div>
+        <div class="warn-box">⚠ 빈집 등급 체계 10가지 혼재 — 전처리 필수</div>
+        <div class="warn-box">⚠ 창원시 데이터 2020년, 양산시·하동군 극소량 (47~95행)</div>
+        <div class="warn-box">⚠ 전입·전출 연도 2020~2022년으로 제한</div>
+        <div class="info-box">✓ 어린이집 위도·경도 포함 → GIS 바로 활용 가능</div>
+        <div class="info-box">✓ 전입사유 7개 구분 → 직업·주거 이유 청년 분리 가능</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공급 빈집 -->
+  <div id="panel-supply" class="panel">
+    <div class="warn-box">⚠ 등급 표기가 시군별로 모두 달라 통합 전처리 필요 (아래 참고)</div>
+    <div class="section-label">시군별 파일 현황</div>
+
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">경상남도_시군별_빈집_통계_20230430</div>
+        <div class="file-meta">18행 × 9열 | 전체 18개 시군 집계</div>
+        <div class="tag-row"><span class="col-tag">시군명</span><span class="col-tag">도시지역 1~4등급</span><span class="col-tag">농어촌지역 1~4등급</span></div>
+        <div class="file-meta" style="margin-top:5px">창원시 1,541개 최다 · 양산시 110개 최소</div>
+      </div>
+      <span class="badge b-supply">기준선</span>
+    </div>
+
+    <div class="section-label">개별 시군 파일</div>
+
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">거제시 (666행)</div>
+        <div class="tag-row"><span class="col-tag">시도명·시군구명·읍면동명</span><span class="col-tag">주택유형</span><span class="col-tag">전용면적</span><span class="col-tag">건축연도</span><span class="col-tag">빈집등급</span></div>
+        <div class="file-issue">등급: (신)등급·(신)1~3등급·(구)1~4등급·행정조사 혼재</div>
+      </div>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">남해군 (1,227행) · 함양군 (381행) · 밀양시 (880행)</div>
+        <div class="tag-row"><span class="col-tag">읍면동</span><span class="col-tag">주택유형</span><span class="col-tag">건축면적·대지면적</span><span class="col-tag">등급</span><span class="col-tag">관리기관</span></div>
+        <div class="file-issue">등급: (구)1~4등급 / (신)1~3등급 혼재</div>
+      </div>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">진주시 (1,082행) · 거창군 (588행)</div>
+        <div class="tag-row"><span class="col-tag">읍면동·리</span><span class="col-tag">주택유형</span><span class="col-tag">건축년도</span><span class="col-tag">연면적</span><span class="col-tag">판정결과(숫자1~3)</span></div>
+        <div class="file-issue">등급이 숫자(1·2·3) 형태 — 다른 시군과 별도 매핑 필요</div>
+      </div>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">합천군 (729행)</div>
+        <div class="tag-row"><span class="col-tag">읍면리명</span><span class="col-tag">주택유형·실제이용현황</span><span class="col-tag">건축면적·대지면적</span><span class="col-tag">등급판정결과</span><span class="col-tag">판정일자</span></div>
+        <div class="file-issue">등급: 신1~3등급 (앞에 '신' 붙음)</div>
+      </div>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">사천시 (426행)</div>
+        <div class="tag-row"><span class="col-tag">행정동·법정동</span><span class="col-tag">건축물대장 주구조·지붕구조</span><span class="col-tag">연면적</span><span class="col-tag">등급판정결과</span></div>
+        <div class="file-issue">등급: 1~3등급(단순형) · 건축연도 컬럼 없음</div>
+      </div>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">양산시 (93행) · 하동군 (95행)</div>
+        <div class="tag-row"><span class="col-tag">소재지(주소 통합형)</span><span class="col-tag">건축물구조</span><span class="col-tag">연면적·대지면적</span><span class="col-tag">등급</span></div>
+        <div class="file-issue">⚠ 행수 극소 — 대표성 낮음 · 하동군은 '거래구분(임대/매매)' 포함</div>
+      </div>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">창원시 (47행)</div>
+        <div class="tag-row"><span class="col-tag">행정동별 빈집개수</span><span class="col-tag">1~4등급 각 개수</span></div>
+        <div class="file-issue">⚠ 2020년 집계 데이터 · 동별 집계형 · 2023 시군별 통계로 대체 권장</div>
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:11px 13px;background:#f5f4f0;border-radius:8px;font-size:12px;color:#5f5e5a;line-height:1.6">
+      <strong style="color:#1a1a18">등급 표준화 매핑 방안</strong><br>
+      (구)1등급·1등급·신1등급·숫자1 → 1등급 / (구)2~4등급 대응 / (신)1~3등급 대응 / (신)등급·조사중 → 미정으로 처리
+    </div>
+  </div>
+
+  <!-- 수요 인구 -->
+  <div id="panel-demand" class="panel">
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">경상남도_연령별_성별_사유별_전입인구</div>
+        <div class="file-meta">152,684행 × 8열 | 2020~2022년</div>
+        <div class="tag-row"><span class="col-tag">연도</span><span class="col-tag">기존거주지</span><span class="col-tag">전입시군구</span><span class="col-tag">전입사유</span><span class="col-tag">연령(세 단위)</span><span class="col-tag">성별</span><span class="col-tag">인원수</span></div>
+        <div class="file-meta" style="margin-top:5px">전입사유: 가족·교육·기타·자연환경·주거환경·주택·직업 (7개)</div>
+      </div>
+      <span class="badge b-demand">핵심</span>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">경상남도_연령별_성별_사유별_전출인구</div>
+        <div class="file-meta">161,278행 × 8열 | 2020~2022년</div>
+        <div class="tag-row"><span class="col-tag">연도</span><span class="col-tag">이전거주지(전출시군)</span><span class="col-tag">전출시도</span><span class="col-tag">전출사유</span><span class="col-tag">연령</span><span class="col-tag">성별</span><span class="col-tag">인원수</span></div>
+      </div>
+      <span class="badge b-demand">핵심</span>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">경상남도_분기별_생활인구_현황</div>
+        <div class="file-meta">1,408행 × 7열 | 2024년 1~4분기</div>
+        <div class="tag-row"><span class="col-tag">연도</span><span class="col-tag">시도군(22개)</span><span class="col-tag">분기</span><span class="col-tag">주중/말</span><span class="col-tag">시간대(새벽·낮·저녁)</span><span class="col-tag">성별</span><span class="col-tag">인구수</span></div>
+        <div class="file-meta" style="margin-top:5px">22개 시군구 포함 · 창원시는 5개 구별 분리</div>
+      </div>
+      <span class="badge b-demand">보완</span>
+    </div>
+    <div class="info-box" style="margin-top:10px">
+      ✓ 청년(20~39세) 필터링 후 전입·전출 차이 → 시군별 순이동 계산 가능<br>
+      ✓ 전입사유 '직업' 필터 → 취업 이유 청년 유입 시군 파악<br>
+      ✓ 생활인구 × 빈집 → 실질 수요-공급 매칭 지수
+    </div>
+    <div class="warn-box">⚠ 전입·전출 데이터가 2020~2022년이라 최근 2~3년 추세 파악 어려움 — 추가 연도 수집 권장</div>
+  </div>
+
+  <!-- 가격 임대 -->
+  <div id="panel-price" class="panel">
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">연립다세대_전월세_자료</div>
+        <div class="file-meta">7,307행 × 18열 | 2022~2026년 계약</div>
+        <div class="tag-row"><span class="col-tag">건축년도</span><span class="col-tag">계약기간·구분</span><span class="col-tag">보증금액(만원)</span><span class="col-tag">전용면적</span><span class="col-tag">월세금액(만원)</span><span class="col-tag">지역코드</span><span class="col-tag">법정동</span><span class="col-tag">갱신요구권사용</span></div>
+      </div>
+      <span class="badge b-price">핵심</span>
+    </div>
+    <div class="section-label" style="margin-top:14px">월세 분포 현황</div>
+    <div class="grid3" style="margin-bottom:12px">
+      <div class="metric-card"><div class="metric-val">26만원</div><div class="metric-lbl">평균 월세</div></div>
+      <div class="metric-card"><div class="metric-val">30만원</div><div class="metric-lbl">중앙값 월세</div></div>
+      <div class="metric-card"><div class="metric-val">0원</div><div class="metric-lbl">전세(1Q, 25%)</div></div>
+    </div>
+    <div class="info-box">
+      ✓ 지역코드로 시군 매핑 → 빈집 데이터와 지역별 비교 가능<br>
+      ✓ 보증금+월세 조합 → 청년 실질 주거비 부담 계산<br>
+      ✓ 건축년도 포함 → 빈집(노후주택) 유사 유형 임대료 추정 기준
+    </div>
+    <div class="warn-box">⚠ 지역코드가 숫자코드(48250 등)라 시군명 매핑 테이블 필요</div>
+  </div>
+
+  <!-- 복지 인프라 -->
+  <div id="panel-welfare" class="panel">
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">경상남도_청년고용률</div>
+        <div class="file-meta">36행 × 3열 | 2024년 1~4분기</div>
+        <div class="tag-row"><span class="col-tag">행정동코드</span><span class="col-tag">청년고용률(%)</span><span class="col-tag">분기</span></div>
+        <div class="file-issue">⚠ 행정동코드가 광역 단위(1000000000 등) — 시군 매핑 사전 확인 필요</div>
+      </div>
+      <span class="badge b-welfare">핵심</span>
+    </div>
+    <div class="file-row">
+      <div style="flex:1">
+        <div class="file-name">경상남도_어린이집_현황_20250124</div>
+        <div class="file-meta">1,729행 × 23열 | 2025년 1월 기준</div>
+        <div class="tag-row"><span class="col-tag">시군구명·행정동</span><span class="col-tag">어린이집명·유형·특성</span><span class="col-tag">상세주소</span><span class="col-tag">위도·경도</span><span class="col-tag">아동정원·현원</span><span class="col-tag">CCTV수</span><span class="col-tag">통학차량</span></div>
+      </div>
+      <span class="badge b-infra">인프라</span>
+    </div>
+    <div class="info-box" style="margin-top:10px">
+      ✓ 위도·경도 포함 → 빈집으로부터 반경 N km 내 어린이집 수 계산 (GIS 분석 즉시 가능)<br>
+      ✓ 아동정원 vs 현원 → 보육 여유 공간 파악 (입소 대기 부담 추정)<br>
+      ✓ 청년고용률 × 빈집수 → 경제적 자립 가능 + 주거 공급 여유 지역 선별
+    </div>
+    <div class="warn-box">⚠ 초등학교·병원·대중교통 데이터 미보유 — 생활 인프라 분석 일부 제한</div>
+  </div>
+
+  <!-- 분석 로드맵 -->
+  <div id="panel-analysis" class="panel">
+    <div class="section-label" style="margin-top:0">전처리 → 단계별 분석 순서</div>
+
+    <div class="step-row">
+      <span class="step-num">1</span>
+      <div class="analysis-item">
+        <div class="analysis-title">빈집 데이터 통합 &amp; 등급 표준화</div>
+        <div class="analysis-desc">11개 시군 파일 합치기 + 등급 10가지 → 1~4등급 단일 체계로 매핑. 건축연도 결측 처리.</div>
+        <div class="analysis-src">사용: 거제·거창·남해·밀양·사천·양산·진주·하동·함양·합천·시군별통계</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">2</span>
+      <div class="analysis-item">
+        <div class="analysis-title">청년 인구이동 분석 (20~39세 필터)</div>
+        <div class="analysis-desc">전입·전출에서 20~39세만 추출 → 시군별 순이동(전입-전출) 계산. 전입사유별 분해.</div>
+        <div class="analysis-src">사용: 전입인구·전출인구</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">3</span>
+      <div class="analysis-item">
+        <div class="analysis-title">시군별 수요-공급 매칭 지수 산출</div>
+        <div class="analysis-desc">빈집수(공급) ÷ 청년 순이동(수요) → 매칭 가능성 지수. 빈집 多+청년 유입 多 지역 우선순위화.</div>
+        <div class="analysis-src">사용: 빈집통계 + 전입·전출</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">4</span>
+      <div class="analysis-item">
+        <div class="analysis-title">청년 고용률 × 주거 공급 교차 분석</div>
+        <div class="analysis-desc">청년 취업 가능성이 높고 빈집이 많은 지역 → 정착 최적 후보지 도출.</div>
+        <div class="analysis-src">사용: 청년고용률 + 빈집통계</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">5</span>
+      <div class="analysis-item">
+        <div class="analysis-title">임대료 수준 분석 &amp; 주거비 부담 추정</div>
+        <div class="analysis-desc">지역코드별 전월세 보증금·월세 분포 → 청년 적정 임대료 기준선. 노후 빈집 예상 임대료 추정.</div>
+        <div class="analysis-src">사용: 연립다세대_전월세</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">6</span>
+      <div class="analysis-item">
+        <div class="analysis-title">신혼가구 보육 인프라 접근성 GIS 분석</div>
+        <div class="analysis-desc">빈집 위치(읍면동) → 행정동 중심좌표 할당 → 반경 1·2km 내 어린이집 수·정원 여유 계산.</div>
+        <div class="analysis-src">사용: 어린이집_현황(위도·경도 포함) + 빈집데이터</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <span class="step-num">7</span>
+      <div class="analysis-item">
+        <div class="analysis-title">종합 매칭 스코어 산출 &amp; 시각화</div>
+        <div class="analysis-desc">수요-공급지수 + 고용률 + 임대료 적정성 + 보육인프라 → 시군별 종합점수. 지도 시각화.</div>
+        <div class="analysis-src">사용: 전 파일 통합</div>
+      </div>
+    </div>
+
+   
+  </div>
+
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
