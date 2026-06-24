@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학생 등록 카드 | 랑이쌤컴퓨터교습소</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --primary: #4F6EF7;
+    --primary-light: #EEF1FE;
+    --primary-dark: #3452D6;
+    --accent: #FF6B6B;
+    --bg: #F7F8FC;
+    --surface: #FFFFFF;
+    --border: #E2E6F0;
+    --text: #1A1D2E;
+    --text-muted: #7A7F9A;
+    --success: #22C55E;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(79,110,247,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .header .badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 4px 14px;
+    border-radius: 100px;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    font-size: 16px;
+    color: var(--text-muted);
+  }
+
+  .form-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    max-width: 680px;
+    margin: 0 auto 16px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    background: var(--primary);
+    color: white;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-header .icon {
+    width: 20px;
+    height: 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .section-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .field-row.single { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.03em;
+  }
+
+  .field label .required {
+    color: var(--accent);
+    margin-left: 2px;
+  }
+
+  .field input[type="text"],
+  .field input[type="tel"],
+  .field select,
+  .field textarea {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 16px;
+    color: var(--text);
+    background: var(--bg);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,110,247,0.1);
+    background: white;
+  }
+
+  .field input.error,
+  .field select.error {
+    border-color: var(--accent);
+    background: #FFF5F5;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  /* Gender radio */
+  .gender-group {
+    display: flex;
+    gap: 12px;
+  }
+
+  .gender-option {
+    flex: 1;
+    position: relative;
+  }
+
+  .gender-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+  }
+
+  .gender-option label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.2s;
+    background: var(--bg);
+  }
+
+  .gender-option input:checked + label {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .gender-group.error .gender-option label {
+    border-color: var(--accent);
+  }
+
+  /* Checkbox / radio pill groups */
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .checkbox-sub-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    margin-top: 4px;
+    margin-bottom: 2px;
+  }
+
+  .checkbox-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .checkbox-item {
+    position: relative;
+  }
+
+  .checkbox-item input[type="checkbox"],
+  .checkbox-item input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+  }
+
+  .checkbox-item label {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    background: var(--bg);
+    white-space: nowrap;
+  }
+
+  .checkbox-item input:checked + label {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .checkbox-grid.error .checkbox-item label {
+    border-color: #FFB3B3;
+  }
+
+  .etc-input {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: var(--bg);
+    outline: none;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .etc-input.visible { display: block; }
+
+  .etc-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,110,247,0.1);
+    background: white;
+  }
+
+  /* error message */
+  .error-msg {
+    font-size: 13px;
+    color: var(--accent);
+    display: none;
+    margin-top: 2px;
+  }
+  .error-msg.show { display: block; }
+
+  /* Payment note */
+  .payment-note {
+    background: #FFF8F0;
+    border: 1px solid #FFD6A0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: none;
+  }
+
+  .payment-note .note-label {
+    font-size: 14px;
+    color: #C47A00;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  /* Privacy consent */
+  .consent-box {
+    background: var(--primary-light);
+    border: 1.5px solid #C5CEFC;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .consent-box p {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .consent-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .consent-check input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .consent-check span {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  /* Signature */
+  .signature-area { display: flex; flex-direction: column; gap: 6px; }
+  .signature-label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+
+  canvas#sigCanvas {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: white;
+    touch-action: none;
+    cursor: crosshair;
+    display: block;
+    width: 100%;
+    height: 120px;
+  }
+
+  canvas#sigCanvas.error { border-color: var(--accent); }
+
+  .sig-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+  }
+
+  .btn-clear-sig {
+    font-size: 14px;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  /* Submit */
+  .submit-area { max-width: 680px; margin: 0 auto; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 4px 16px rgba(79,110,247,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-submit:hover { background: var(--primary-dark); }
+  .btn-submit:active { transform: scale(0.99); }
+  .btn-submit:disabled { background: #9AAAF8; cursor: not-allowed; }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Success overlay */
+  #successOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.96);
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    text-align: center;
+    padding: 24px;
+  }
+
+  #successOverlay.show { display: flex; }
+
+  .success-icon {
+    width: 72px; height: 72px;
+    background: #DCFCE7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+  }
+
+  #successOverlay h2 { font-size: 22px; font-weight: 700; color: var(--text); }
+  #successOverlay p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+  .btn-new {
+    margin-top: 8px;
+    padding: 12px 28px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 100px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media (max-width: 480px) {
+    .field-row { grid-template-columns: 1fr; }
+    .header h1 { font-size: 20px; }
+    .section-body { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">랑이쌤컴퓨터교습소</div>
+  <h1>학생 등록 카드</h1>
+  <p>아래 정보를 입력해 주세요.</p>
+</div>
+
+<form id="consultForm" novalidate>
+
+  <!-- 학생 정보 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">👤</div> 학생 정보
+    </div>
+    <div class="section-body">
+
+      <div class="field-row">
+        <div class="field">
+          <label>이름 <span class="required">*</span></label>
+          <input type="text" id="name" placeholder="홍길동">
+          <span class="error-msg" id="err-name">이름을 입력해 주세요.</span>
+        </div>
+        <div class="field">
+          <label>생년월일 <span class="required">*</span></label>
+          <input type="text" id="birthdate" placeholder="예) 20150301" maxlength="8">
+          <span class="error-msg" id="err-birthdate">생년월일 8자리를 입력해 주세요.</span>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>학교 <span class="required">*</span></label>
+          <input type="text" id="school" placeholder="예) 서울초등학교">
+          <span class="error-msg" id="err-school">학교명을 입력해 주세요.</span>
+        </div>
+        <div class="field">
+          <label>학년 <span class="required">*</span></label>
+          <select id="grade">
+            <option value="">-- 선택 --</option>
+            <optgroup label="초등학교">
+              <option value="초1">초등 1학년</option>
+              <option value="초2">초등 2학년</option>
+              <option value="초3">초등 3학년</option>
+              <option value="초4">초등 4학년</option>
+              <option value="초5">초등 5학년</option>
+              <option value="초6">초등 6학년</option>
+            </optgroup>
+            <optgroup label="중학교">
+              <option value="중1">중학교 1학년</option>
+              <option value="중2">중학교 2학년</option>
+              <option value="중3">중학교 3학년</option>
+            </optgroup>
+            <optgroup label="고등학교">
+              <option value="고1">고등학교 1학년</option>
+              <option value="고2">고등학교 2학년</option>
+              <option value="고3">고등학교 3학년</option>
+            </optgroup>
+          </select>
+          <span class="error-msg" id="err-grade">학년을 선택해 주세요.</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>성별 <span class="required">*</span></label>
+        <div class="gender-group" id="genderGroup">
+          <div class="gender-option">
+            <input type="radio" name="gender" id="genderM" value="남">
+            <label for="genderM">남</label>
+          </div>
+          <div class="gender-option">
+            <input type="radio" name="gender" id="genderF" value="여">
+            <label for="genderF">여</label>
+          </div>
+        </div>
+        <span class="error-msg" id="err-gender">성별을 선택해 주세요.</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>연락처 (부모님) <span class="required">*</span></label>
+          <input type="tel" id="parentTel" placeholder="010-0000-0000">
+          <span class="error-msg" id="err-parentTel">부모님 연락처를 입력해 주세요.</span>
+        </div>
+        <div class="field">
+          <label>연락처 (학생)</label>
+          <input type="tel" id="studentTel" placeholder="010-0000-0000">
+        </div>
+      </div>
+
+      <div class="field single">
+        <label>주소 <span class="required">*</span></label>
+        <input type="text" id="address" placeholder="거주지 주소(아파트명 혹은 건물명까지)를 입력해 주세요">
+        <span class="error-msg" id="err-address">주소를 입력해 주세요.</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 희망 수강 과정 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">💻</div> 희망 수강 과정 
+      <span style="font-size:11px;opacity:0.8;margin-left:4px;">(필수, 복수선택 가능) - 개인별 수업 커리큘럼을 짜 드립니다.</span>
+    </div>
+    <div class="section-body">
+      <div class="checkbox-group">
+        <div class="checkbox-sub-label">SW 융합 활용</div>
+        <div class="checkbox-grid" id="courseGrid">
+          <div class="checkbox-item"><input type="checkbox" id="c1" name="course" value="디지털리터러시"><label for="c1">디지털리터러시</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="c2" name="course" value="파워포인트"><label for="c2">파워포인트</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="c3" name="course" value="동영상편집"><label for="c3">동영상편집</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="c4" name="course" value="한글"><label for="c4">한글</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="c5" name="course" value="엑셀"><label for="c5">엑셀</label></div>
+        </div>
+        <div class="checkbox-sub-label">SW 융합 코딩</div>
+        <div class="checkbox-grid">
+          <div class="checkbox-item"><input type="checkbox" id="c6" name="course" value="블럭코딩(스크래치)"><label for="c6">블럭코딩(스크래치)</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="c7" name="course" value="블럭코딩(엔트리)"><label for="c7">블럭코딩(엔트리)</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="c8" name="course" value="텍스트코딩(파이썬)"><label for="c8">텍스트코딩(파이썬)</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="c9" name="course" value="텍스트코딩(C)"><label for="c9">텍스트코딩(C)</label></div>
+        </div>
+        <div class="checkbox-sub-label">기타</div>
+        <div class="checkbox-grid">
+          <div class="checkbox-item"><input type="checkbox" id="c10" name="course" value="기타" onchange="toggleEtc(this,'courseEtc')"><label for="c10">기타</label></div>
+        </div>
+        <input type="text" id="courseEtc" class="etc-input" placeholder="희망 과정을 입력해 주세요">
+        <span class="error-msg" id="err-course">희망 수강 과정을 하나 이상 선택해 주세요.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 교육비 납입방법 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">💳</div> 교육비 납입방법 <span style="font-size:11px;opacity:0.8;margin-left:4px;">(필수) - 주 납입방법을 선택해 주시면 됩니다. (추후 변경 가능)</span>
+    </div>
+    <div class="section-body">
+      <div class="checkbox-group">
+        <div class="checkbox-grid" id="paymentGrid">
+          <div class="checkbox-item"><input type="radio" id="p1" name="payment" value="비대면 카드 결제(결제선생)"><label for="p1">비대면 카드(결제선생)</label></div>
+          <div class="checkbox-item"><input type="radio" id="p2" name="payment" value="방문결제"><label for="p2">방문결제</label></div>
+          <div class="checkbox-item"><input type="radio" id="p3" name="payment" value="계좌이체" onchange="togglePaymentNote()"><label for="p3">계좌이체</label></div>
+          <div class="checkbox-item"><input type="radio" id="p4" name="payment" value="기타" onchange="togglePaymentNote(); toggleEtcRadio('payEtc')"><label for="p4">기타</label></div>
+        </div>
+        <input type="text" id="payEtc" class="etc-input" placeholder="납입방법을 입력해 주세요">
+        <span class="error-msg" id="err-payment">납입방법을 선택해 주세요.</span>
+      </div>
+
+      <div class="payment-note" id="paymentNote">
+        <div class="note-label">현금영수증 번호 (계좌이체 시)</div>
+        <input type="tel" id="cashReceiptNum" style="margin-top:6px;border:1.5px solid #FFD6A0;border-radius:8px;padding:8px 12px;font-family:inherit;font-size:14px;width:100%;outline:none;background:#FFF8F0;" placeholder="010-0000-0000">
+      </div>
+    </div>
+  </div>
+
+  <!-- 교육 경험 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">📚</div> 교육 경험 <span style="font-size:11px;opacity:0.8;margin-left:4px;">(필수)</span>
+    </div>
+    <div class="section-body">
+      <div class="checkbox-group">
+        <div class="checkbox-grid" id="eduGrid">
+          <div class="checkbox-item"><input type="checkbox" id="e1" name="edu" value="방과후" onchange="toggleEtc(this,'eduAfter')"><label for="e1">방과후</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="e2" name="edu" value="온라인교육" onchange="toggleEtc(this,'eduOnline')"><label for="e2">온라인교육</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="e3" name="edu" value="학원" onchange="toggleEtc(this,'eduAcademy')"><label for="e3">학원</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="e4" name="edu" value="기타" onchange="toggleEtc(this,'eduEtc')"><label for="e4">기타</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="e5" name="edu" value="없음" onchange="handleEduNone(this)"><label for="e5">없음</label></div>
+        </div>
+        <input type="text" id="eduAfter" class="etc-input" placeholder="수강 과목을 입력해 주세요">
+        <input type="text" id="eduOnline" class="etc-input" placeholder="사이트명을 입력해 주세요">
+        <input type="text" id="eduAcademy" class="etc-input" placeholder="학원명을 입력해 주세요">
+        <input type="text" id="eduEtc" class="etc-input" placeholder="기타 교육 경험을 입력해 주세요">
+        <span class="error-msg" id="err-edu">교육 경험을 하나 이상 선택해 주세요.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 방문 경로 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">🗺️</div> 방문 경로 <span style="font-size:11px;opacity:0.8;margin-left:4px;">(필수) - AI검색을 하신 경우 기타를 선택하시고 검색하신 AI를 입력해 주세요.(예. ChatGPT)</span>
+    </div>
+    <div class="section-body">
+      <div class="checkbox-group">
+        <div class="checkbox-grid" id="visitGrid">
+          <div class="checkbox-item"><input type="checkbox" id="v1" name="visit" value="인터넷 검색"><label for="v1">인터넷 검색</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="v2" name="visit" value="전단지 광고"><label for="v2">전단지 광고</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="v3" name="visit" value="지인 소개" onchange="toggleEtc(this,'visitRef')"><label for="v3">지인 소개</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="v4" name="visit" value="상가 방문"><label for="v4">상가 방문</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="v5" name="visit" value="기타" onchange="toggleEtc(this,'visitEtc')"><label for="v5">기타</label></div>
+        </div>
+        <input type="text" id="visitRef" class="etc-input" placeholder="추천인 성함을 입력해 주세요">
+        <input type="text" id="visitEtc" class="etc-input" placeholder="기타 방문 경로를 입력해 주세요">
+        <span class="error-msg" id="err-visit">방문 경로를 하나 이상 선택해 주세요.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 교육 목표 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">🎯</div> 교육 목표 <span style="font-size:11px;opacity:0.8;margin-left:4px;">(필수)</span>
+    </div>
+    <div class="section-body">
+      <div class="checkbox-group">
+        <div class="checkbox-grid" id="goalGrid">
+          <div class="checkbox-item"><input type="checkbox" id="g1" name="goal" value="수행평가"><label for="g1">수행평가</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="g2" name="goal" value="자격증"><label for="g2">자격증</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="g3" name="goal" value="입시 포트폴리오"><label for="g3">입시 포트폴리오</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="g4" name="goal" value="동기부여"><label for="g4">동기부여</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="g5" name="goal" value="즐거움"><label for="g5">즐거움</label></div>
+          <div class="checkbox-item"><input type="checkbox" id="g6" name="goal" value="기타" onchange="toggleEtc(this,'goalEtc')"><label for="g6">기타</label></div>
+        </div>
+        <input type="text" id="goalEtc" class="etc-input" placeholder="기타 교육 목표를 입력해 주세요">
+        <span class="error-msg" id="err-goal">교육 목표를 하나 이상 선택해 주세요.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 남기고 싶은 말씀 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">✏️</div> 선생님께 남기고 싶은 말씀 <span style="font-size:11px;opacity:0.8;margin-left:4px;">(선택)</span>
+    </div>
+    <div class="section-body">
+      <div class="field single">
+        <textarea id="message" placeholder="교육 시 부탁하실 내용이나 학생에 대해 전달하고 싶은 내용을 자유롭게 작성해 주세요."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 개인정보 동의 & 서명 -->
+  <div class="form-card">
+    <div class="section-header">
+      <div class="icon">🔒</div> 개인정보 수집 · 활용 동의
+    </div>
+    <div class="section-body">
+      <div class="consent-box">
+        <p>본인은 학생관리, 수업, 홍보 등을 위하여 필요한 경우 본인이 제출한 개인정보를 <strong>랑이쌤컴퓨터교습소</strong>에서 수집 및 활용하는 것에 동의합니다.</p>
+        <label class="consent-check">
+          <input type="checkbox" id="consent">
+          <span>위 내용에 동의합니다 (필수)</span>
+        </label>
+      </div>
+      <span class="error-msg" id="err-consent">개인정보 수집·활용에 동의해 주세요.</span>
+
+      <div class="signature-area">
+        <div class="signature-label">법정대리인 서명 <span class="required">*</span></div>
+        <canvas id="sigCanvas" width="640" height="120"></canvas>
+        <span class="error-msg" id="err-sig">서명을 해 주세요.</span>
+        <div class="sig-controls">
+          <button type="button" class="btn-clear-sig" onclick="clearSig()">서명 지우기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-area">
+    <button type="submit" class="btn-submit" id="submitBtn">
+      <div class="spinner" id="spinner"></div>
+      <span id="submitText">상담 신청 완료 →</span>
+    </button>
+  </div>
+
+</form>
+
+<!-- Success -->
+<div id="successOverlay">
+  <div class="success-icon">✅</div>
+  <h2>학생 등록이 완료되었습니다!</h2>
+  <p>입력해 주신 정보를 확인하겠습니다.<br>감사합니다 😊</p>
+  <button class="btn-new" onclick="resetForm()">새 상담카드 작성하기</button>
+</div>
+
+<script>
+  // ── Google Apps Script URL (배포 후 여기에 붙여넣기) ──
+  const APPS_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ── 기타 입력 토글 ──
+  function toggleEtc(checkbox, inputId) {
+    const input = document.getElementById(inputId);
+    if (checkbox.checked) { input.classList.add('visible'); input.focus(); }
+    else { input.classList.remove('visible'); input.value = ''; }
+  }
+
+  function toggleEtcRadio(inputId) {
+    const input = document.getElementById(inputId);
+    const p4 = document.getElementById('p4');
+    if (p4.checked) { input.classList.add('visible'); input.focus(); }
+    else { input.classList.remove('visible'); input.value = ''; }
+  }
+
+  // ── 계좌이체 선택 시 현금영수증 표시 ──
+  function togglePaymentNote() {
+    const note = document.getElementById('paymentNote');
+    const isBank = document.getElementById('p3').checked;
+    note.style.display = isBank ? 'block' : 'none';
+    if (!isBank) document.getElementById('cashReceiptNum').value = '';
+  }
+
+  // 다른 결제수단 클릭 시 note 닫기
+  ['p1','p2','p4'].forEach(id => {
+    document.getElementById(id).addEventListener('change', togglePaymentNote);
+  });
+
+  // ── 교육경험 '없음' 선택 시 나머지 해제 ──
+  function handleEduNone(cb) {
+    if (cb.checked) {
+      document.querySelectorAll('input[name="edu"]').forEach(c => {
+        if (c.value !== '없음') {
+          c.checked = false;
+          ['eduAfter','eduOnline','eduAcademy','eduEtc'].forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.remove('visible'); el.value = '';
+          });
+        }
+      });
+    }
+  }
+
+  // '없음' 외 선택 시 '없음' 해제
+  document.querySelectorAll('input[name="edu"]').forEach(c => {
+    if (c.value !== '없음') {
+      c.addEventListener('change', () => {
+        if (c.checked) document.getElementById('e5').checked = false;
+      });
+    }
+  });
+
+  // ── 전화번호 자동 하이픈 ──
+  function formatTel(input) {
+    let v = input.value.replace(/\D/g,'');
+    if (v.length > 3 && v.length <= 7) v = v.slice(0,3)+'-'+v.slice(3);
+    else if (v.length > 7) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+    input.value = v;
+  }
+  ['parentTel','studentTel','cashReceiptNum'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function(){ formatTel(this); });
+  });
+
+  // ── 서명 캔버스 ──
+  const canvas = document.getElementById('sigCanvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false, hasSig = false;
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const sx = canvas.width / r.width, sy = canvas.height / r.height;
+    if (e.touches) return { x:(e.touches[0].clientX-r.left)*sx, y:(e.touches[0].clientY-r.top)*sy };
+    return { x:(e.clientX-r.left)*sx, y:(e.clientY-r.top)*sy };
+  }
+  canvas.addEventListener('mousedown', e=>{ drawing=true; hasSig=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); });
+  canvas.addEventListener('mousemove', e=>{ if(!drawing)return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.strokeStyle='#1A1D2E'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.stroke(); });
+  canvas.addEventListener('mouseup', ()=>drawing=false);
+  canvas.addEventListener('mouseleave', ()=>drawing=false);
+  canvas.addEventListener('touchstart', e=>{ e.preventDefault(); drawing=true; hasSig=true; const p=getPos(e); ctx.beginPath(); ctx.moveTo(p.x,p.y); },{passive:false});
+  canvas.addEventListener('touchmove', e=>{ e.preventDefault(); if(!drawing)return; const p=getPos(e); ctx.lineTo(p.x,p.y); ctx.strokeStyle='#1A1D2E'; ctx.lineWidth=2; ctx.lineCap='round'; ctx.stroke(); },{passive:false});
+  canvas.addEventListener('touchend', ()=>drawing=false);
+
+  function clearSig() { ctx.clearRect(0,0,canvas.width,canvas.height); hasSig=false; }
+
+  // ── 유효성 검사 ──
+  function showErr(id, show) {
+    const el = document.getElementById('err-'+id);
+    if (el) el.classList.toggle('show', show);
+  }
+
+  function validate() {
+    let ok = true;
+
+    const name = document.getElementById('name').value.trim();
+    showErr('name', !name);
+    if (!name) ok = false;
+
+    const bd = document.getElementById('birthdate').value.trim();
+    const bdOk = /^\d{8}$/.test(bd);
+    showErr('birthdate', !bdOk);
+    if (!bdOk) ok = false;
+
+    const school = document.getElementById('school').value.trim();
+    showErr('school', !school);
+    if (!school) ok = false;
+
+    const grade = document.getElementById('grade').value;
+    showErr('grade', !grade);
+    if (!grade) ok = false;
+
+    const gender = document.querySelector('input[name="gender"]:checked');
+    showErr('gender', !gender);
+    document.getElementById('genderGroup').classList.toggle('error', !gender);
+    if (!gender) ok = false;
+
+    const parentTel = document.getElementById('parentTel').value.trim();
+    showErr('parentTel', !parentTel);
+    if (!parentTel) ok = false;
+
+    const address = document.getElementById('address').value.trim();
+    showErr('address', !address);
+    if (!address) ok = false;
+
+    const courses = document.querySelectorAll('input[name="course"]:checked');
+    showErr('course', courses.length === 0);
+    if (courses.length === 0) ok = false;
+
+    const payment = document.querySelector('input[name="payment"]:checked');
+    showErr('payment', !payment);
+    if (!payment) ok = false;
+
+    const edu = document.querySelectorAll('input[name="edu"]:checked');
+    showErr('edu', edu.length === 0);
+    if (edu.length === 0) ok = false;
+
+    const visit = document.querySelectorAll('input[name="visit"]:checked');
+    showErr('visit', visit.length === 0);
+    if (visit.length === 0) ok = false;
+
+    const goal = document.querySelectorAll('input[name="goal"]:checked');
+    showErr('goal', goal.length === 0);
+    if (goal.length === 0) ok = false;
+
+    const consent = document.getElementById('consent').checked;
+    showErr('consent', !consent);
+    if (!consent) ok = false;
+
+    showErr('sig', !hasSig);
+    canvas.classList.toggle('error', !hasSig);
+    if (!hasSig) ok = false;
+
+    return ok;
+  }
+
+  // ── 오늘 날짜 (한국시간) ──
+  function getTodayKST() {
+    const now = new Date();
+    const kst = new Date(now.getTime() + 9*60*60*1000);
+    const y = kst.getUTCFullYear();
+    const m = String(kst.getUTCMonth()+1).padStart(2,'0');
+    const d = String(kst.getUTCDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+
+  // ── 폼 제출 ──
+  document.getElementById('consultForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    if (!validate()) {
+      // 첫 번째 에러로 스크롤
+      const firstErr = document.querySelector('.error-msg.show');
+      if (firstErr) firstErr.scrollIntoView({ behavior:'smooth', block:'center' });
+      return;
+    }
+
+    // 로딩 상태
+    const btn = document.getElementById('submitBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('submitText');
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = '전송 중...';
+
+    // 데이터 수집
+    const courses = Array.from(document.querySelectorAll('input[name="course"]:checked')).map(c =>
+      c.value === '기타' ? '기타: '+document.getElementById('courseEtc').value : c.value
+    );
+    const payment = document.querySelector('input[name="payment"]:checked');
+    const payVal = payment ? (payment.value === '기타' ? '기타: '+document.getElementById('payEtc').value : payment.value) : '';
+    const eduExps = Array.from(document.querySelectorAll('input[name="edu"]:checked')).map(c => {
+      if (c.value==='방과후') return '방과후('+document.getElementById('eduAfter').value+')';
+      if (c.value==='온라인교육') return '온라인교육('+document.getElementById('eduOnline').value+')';
+      if (c.value==='학원') return '학원('+document.getElementById('eduAcademy').value+')';
+      if (c.value==='기타') return '기타: '+document.getElementById('eduEtc').value;
+      return c.value;
+    });
+    const visits = Array.from(document.querySelectorAll('input[name="visit"]:checked')).map(c => {
+      if (c.value==='지인 소개') return '지인 소개(추천인: '+document.getElementById('visitRef').value+')';
+      if (c.value==='기타') return '기타: '+document.getElementById('visitEtc').value;
+      return c.value;
+    });
+    const goals = Array.from(document.querySelectorAll('input[name="goal"]:checked')).map(c =>
+      c.value==='기타' ? '기타: '+document.getElementById('goalEtc').value : c.value
+    );
+
+    const payload = {
+      상담일자: getTodayKST(),
+      이름: document.getElementById('name').value.trim(),
+      생년월일: document.getElementById('birthdate').value.trim(),
+      학교: document.getElementById('school').value.trim(),
+      학년: document.getElementById('grade').value,
+      성별: document.querySelector('input[name="gender"]:checked')?.value || '',
+      부모님연락처: document.getElementById('parentTel').value.trim(),
+      학생연락처: document.getElementById('studentTel').value.trim(),
+      주소: document.getElementById('address').value.trim(),
+      희망수강과정: courses.join(', '),
+      교육비납입방법: payVal,
+      현금영수증번호: document.getElementById('cashReceiptNum').value.trim(),
+      교육경험: eduExps.join(', '),
+      방문경로: visits.join(', '),
+      교육목표: goals.join(', '),
+      남기고싶은말씀: document.getElementById('message').value.trim(),
+      서명이미지: canvas.toDataURL('image/png')
+    };
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById('successOverlay').classList.add('show');
+    } catch(err) {
+      alert('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.\n' + err.message);
+    } finally {
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      btnText.textContent = '상담 신청 완료 →';
+    }
+  });
+
+  function resetForm() {
+    document.getElementById('consultForm').reset();
+    clearSig();
+    document.querySelectorAll('.etc-input').forEach(el => { el.classList.remove('visible'); el.value=''; });
+    document.getElementById('paymentNote').style.display = 'none';
+    document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+    document.getElementById('genderGroup').classList.remove('error');
+    canvas.classList.remove('error');
+    document.getElementById('successOverlay').classList.remove('show');
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+</script>
+</body>
+</html>
