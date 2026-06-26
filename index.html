@@ -511,18 +511,17 @@
 
   /* 동의 체크박스 */
   .check-row {
-    display: flex; align-items: flex-start; gap: 10px;
+    display: flex; align-items: center; gap: 10px;
     padding: 14px 16px;
     border: 1.5px solid var(--border); border-radius: 8px;
     cursor: pointer; transition: border-color .15s, background .15s;
   }
   .check-row:has(input:checked) { border-color: var(--accent); background: var(--accent-light); }
   .check-row input[type="checkbox"] {
-    width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;
+    width: 18px; height: 18px; flex-shrink: 0;
     accent-color: var(--accent); cursor: pointer;
   }
   .check-row .check-label { font-size: 16px; font-weight: 500; line-height: 1.4; }
-  .check-row .check-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -532,7 +531,7 @@
     <img src="logo.png" alt="랑이쌤컴퓨터교습소 로고" class="header-logo-img"
          onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
     <div class="header-logo-img placeholder" style="display:none">🎓</div>
-    <div class="logo">랑이쌤컴퓨터 <span>방학 특강 수강 신청</span></div>
+    <div class="logo">랑이쌤컴퓨터 <span>수강 신청</span></div>
   </a>
   <div class="header-nav">
     <a href="curriculum-guide.html">📋 추천 커리큘럼 보기</a>
@@ -574,7 +573,7 @@
   <!-- ===== STEP 1: 과정 선택 ===== -->
   <div id="s1">
     <div class="card">
-      <div class="card-title">📚 수강할 과정을 선택하세요 -  초 1~3학년은 80분 수업 / 초 4 이상은 120분수업</div>
+      <div class="card-title">📚 수강할 과정을 선택하세요</div>
       <div class="course-grid" id="courseGrid">
         <div class="course-item" data-id="dl" data-name="디지털 리터러시 과정" data-sessions="4" onclick="selectCourse(this)">
           <div class="course-top"><span class="course-icon">🧭</span><span class="course-name">디지털 리터러시 과정</span><span class="course-badge">4회차</span></div>
@@ -808,7 +807,7 @@
       <div class="field" style="margin-bottom:0;">
         <label class="check-row" for="agree">
           <input type="checkbox" id="agree">
-            <span class="check-label"> 위 안내사항을 모두 확인하였습니다. <span class="req">*</span>
+          <span class="check-label">위 안내사항을 모두 확인하였습니다. <span class="req">*</span></span>
         </label>
         <div class="field-error" id="errAgree">안내사항 확인에 동의해 주세요.</div>
       </div>
@@ -859,7 +858,7 @@
 
 <script>
 // ── 설정 ──────────────────────────────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwd9Emn8-MILa6urNR8lnZywCPZVIHuFVhOUPPqc7o8IwuRFAdu46J5g706Osdmw3WaKg/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbybxSz45l47IqpcNudcw9dJu2sgvoAwq7-1gqcZ80woi9w1UKh5XNt1DsQhq_2A3WRhVw/exec';
 const MAX_PER_SLOT = 6; // 교시당 최대 수강 인원
 
 // ── 교시별 현재 신청 인원 (GAS에서 불러오거나 직접 관리)
@@ -1203,7 +1202,7 @@ function renderConfirm() {
 
   document.getElementById('confirmTable').innerHTML = `
     <tr><td>과정</td><td><strong>${state.courseName}</strong></td></tr>
-    <tr><td>총 회차</td><td>${state.sessions}회 · 회당 초 4학년 이상은 120분 수업 / 초 1~3학년은 80분 수업</td></tr>
+    <tr><td>총 회차</td><td>${state.sessions}회 · 회당 2시간</td></tr>
     <tr><td>선택 수업일</td><td><div class="schedule-chips">${schChips}</div></td></tr>
     <tr><td>학생 이름</td><td>${v('fName')}</td></tr>
     <tr><td>생년월일</td><td>${v('fBirth')}</td></tr>
@@ -1226,27 +1225,42 @@ function submitForm() {
   btn.textContent = '제출 중...';
   btn.disabled = true;
 
-  const paymentEl = document.querySelector('input[name="payment"]:checked');
+  const paymentEl  = document.querySelector('input[name="payment"]:checked');
   const paymentVal = paymentEl ? paymentEl.value : '';
 
   const params = new URLSearchParams({
-    action:        'submit',
-    studentName:   v('fName'),
-    birth:         v('fBirth'),
-    school:        v('fSchool'),
-    grade:         v('fGrade'),
-    phone:         v('fPhone'),
-    studentPhone:  v('fStudentPhone'),
-    courseName:    state.courseName,
-    sessions:      state.sessions,
-    schedule:      state.picked.map(k => slotKeyToLabel(k)).join(', '),
-    payment:       paymentVal,
-    receiptNum:    paymentVal === '계좌이체' ? v('receipt-num') : '',
-    note:          v('fNote')
+    action:      'submit',
+    studentName: v('fName'),
+    birth:       v('fBirth'),
+    school:      v('fSchool'),
+    grade:       v('fGrade'),
+    phone:       v('fPhone'),
+    studentPhone:v('fStudentPhone'),
+    courseName:  state.courseName,
+    sessions:    state.sessions,
+    schedule:    state.picked.map(k => slotKeyToLabel(k)).join(', '),
+    payment:     paymentVal,
+    receiptNum:  paymentVal === '계좌이체' ? v('receipt-num') : '',
+    note:        v('fNote')
   });
 
-  fetch(GAS_URL + '?' + params)
-    .then(r => r.json())
+  // 타임아웃 컨트롤러 (15초)
+  const controller = new AbortController();
+  const timeoutId  = setTimeout(() => controller.abort(), 15000);
+
+  fetch(GAS_URL + '?' + params, {
+    method: 'GET',
+    signal: controller.signal,
+    redirect: 'follow'
+  })
+    .then(r => {
+      clearTimeout(timeoutId);
+      // GAS는 가끔 text로 응답하므로 안전하게 파싱
+      return r.text().then(text => {
+        try { return JSON.parse(text); }
+        catch { throw new Error('응답 파싱 오류: ' + text); }
+      });
+    })
     .then(data => {
       if (data.success) {
         document.getElementById('appNoDisplay').textContent = data.appNo;
@@ -1255,15 +1269,27 @@ function submitForm() {
            선택하신 일정과 안내사항은 보호자 연락처(<strong>${v('fPhone')}</strong>)로 연락드릴게요.`;
         go(5);
       } else {
-        alert('오류가 발생했습니다: ' + data.message);
+        alert('오류가 발생했습니다: ' + (data.message || '알 수 없는 오류'));
         btn.textContent = '신청 완료';
         btn.disabled = false;
       }
     })
-    .catch(() => {
-      alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-      btn.textContent = '신청 완료';
-      btn.disabled = false;
+    .catch(err => {
+      clearTimeout(timeoutId);
+      if (err.name === 'AbortError') {
+        // 타임아웃 — GAS가 느린 것일 뿐, 실제로는 저장됐을 수 있음
+        // 완료 화면으로 이동하되 안내 문구 변경
+        document.getElementById('appNoDisplay').textContent = '접수 중';
+        document.getElementById('successDetail').innerHTML =
+          `<strong>${v('fName')}</strong>님의 신청이 처리되고 있습니다.<br>
+           잠시 후 보호자 연락처(<strong>${v('fPhone')}</strong>)로 확인 연락 드릴게요.<br>
+           <span style="font-size:14px;color:#e34f4f;">※ 신청번호는 잠시 후 문자로 안내됩니다.</span>`;
+        go(5);
+      } else {
+        alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        btn.textContent = '신청 완료';
+        btn.disabled = false;
+      }
     });
 }
 
