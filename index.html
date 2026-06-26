@@ -41,8 +41,8 @@
   header {
     background: var(--accent);
     border-bottom: none;
-    padding: 0 24px;
-    height: 64px;
+    padding: 0 16px;
+    height: 56px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -50,34 +50,42 @@
     top: 0;
     z-index: 100;
   }
-  .header-logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .header-logo-wrap { display: flex; align-items: center; gap: 8px; text-decoration: none; min-width: 0; }
   .header-logo-img  {
-    height: 40px; width: 40px;
+    height: 36px; width: 36px;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 6px;
     background: #fff;
     padding: 2px;
+    flex-shrink: 0;
   }
   .header-logo-img.placeholder {
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px; background: #fff;
+    font-size: 18px; background: #fff;
   }
   .logo {
-    font-size: 16px; font-weight: 700;
+    font-size: 15px; font-weight: 700;
     color: #ffffff; letter-spacing: -.3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .logo span { color: rgba(255,255,255,.75); font-weight: 400; }
-  .header-nav { display: flex; align-items: center; gap: 16px; }
+  .header-nav { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
   .header-nav a {
-    font-size: 13px; color: rgba(255,255,255,.8);
+    font-size: 12px; color: rgba(255,255,255,.85);
     text-decoration: none; transition: color .15s;
+    white-space: nowrap;
   }
   .header-nav a:hover { color: #ffffff; }
-  .header-admin { font-size: 13px; color: rgba(255,255,255,.8); text-decoration: none; }
+  .header-admin { font-size: 12px; color: rgba(255,255,255,.85); text-decoration: none; white-space: nowrap; }
   .header-admin:hover { color: #ffffff; }
+  @media(max-width: 400px) {
+    .logo span { display: none; }
+    .header-nav a { font-size: 11px; }
+  }
 
   /* ── 컨테이너 ── */
-  .container { max-width: 720px; margin: 0 auto; padding: 32px 20px 60px; }
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px 60px; }
+  @media(max-width: 500px) { .container { padding: 16px 12px 60px; } }
 
   /* ── 상단 안내 ── */
   .page-intro {
@@ -141,9 +149,10 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
-    padding: 24px;
-    margin-bottom: 16px;
+    padding: 20px;
+    margin-bottom: 14px;
   }
+  @media(max-width: 500px) { .card { padding: 16px 14px; } }
   .card-title {
     font-size: 17px; font-weight: 700;
     margin-bottom: 16px;
@@ -229,14 +238,27 @@
   .chip .rm { font-size: 15px; opacity: .6; }
   .chip-empty { font-size: 15px; color: var(--hint); align-self: center; }
 
-  .cal-wrapper { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .cal-wrapper {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  /* 모바일: 캘린더 가로 스크롤 */
+  .cal-scroll-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cal-scroll-wrap::-webkit-scrollbar { height: 4px; }
+  .cal-scroll-wrap::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
   .cal-week-label {
     background: #f8f9fb; border-bottom: 1px solid var(--border);
-    padding: 7px 12px; font-size: 14px; font-weight: 600; color: var(--muted);
+    padding: 6px 10px; font-size: 13px; font-weight: 600; color: var(--muted);
+    white-space: nowrap;
   }
 
   .cal-slot-row {
     display: grid; border-bottom: 1px solid var(--border);
+    min-width: max-content; /* 가로 스크롤 시 줄바꿈 방지 */
   }
   .cal-slot-row:last-child { border-bottom: none; }
   .cal-slot-row.row-p1 { background: #ffffff; }
@@ -244,34 +266,38 @@
 
   .cal-time-col {
     background: rgba(0,0,0,.03);
-    font-size: 13px; font-weight: 500; color: var(--muted);
-    padding: 8px 6px; border-right: 1px solid var(--border);
+    font-size: 11px; font-weight: 500; color: var(--muted);
+    padding: 6px 4px; border-right: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    text-align: center; line-height: 1.4;
-    min-width: 72px;
+    text-align: center; line-height: 1.35;
+    min-width: 56px; width: 56px;
   }
-  .cal-day-col { border-right: 1px solid var(--border); }
+  .cal-day-col {
+    border-right: 1px solid var(--border);
+    min-width: 68px;
+  }
   .cal-day-col:last-child { border-right: none; }
 
   .cal-day-head {
-    font-size: 13px; font-weight: 600; color: var(--muted);
-    text-align: center; padding: 7px 4px;
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    text-align: center; padding: 5px 2px;
     background: rgba(0,0,0,.025); border-bottom: 1px solid var(--border);
+    white-space: nowrap;
   }
 
   .slot {
-    margin: 5px 5px 2px;
-    padding: 6px 4px 4px;
-    border-radius: 7px;
-    font-size: 12px; font-weight: 500; text-align: center;
+    margin: 4px 3px 2px;
+    padding: 5px 2px 3px;
+    border-radius: 6px;
+    font-size: 11px; font-weight: 500; text-align: center;
     cursor: pointer; transition: all .12s;
     border: 1.5px solid var(--border);
     background: var(--surface); color: var(--muted);
     line-height: 1.3;
   }
-  .slot .slot-time { display: block; font-size: 12px; }
+  .slot .slot-time { display: block; font-size: 10px; }
   .slot .slot-count {
-    display: block; font-size: 11px; margin-top: 3px;
+    display: block; font-size: 10px; margin-top: 2px;
     font-weight: 600; color: #16a34a;
   }
   .slot:hover:not(.full):not(.closed) { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
@@ -641,7 +667,9 @@
       </div>
 
       <!-- 캘린더 -->
-      <div class="cal-wrapper" id="calWrapper"></div>
+      <div class="cal-wrapper">
+        <div class="cal-scroll-wrap" id="calWrapper"></div>
+      </div>
     </div>
     <div class="nav-row">
       <button class="btn" onclick="go(1)">← 이전</button>
@@ -971,12 +999,19 @@ function renderCalendar() {
   wrap.innerHTML = '';
 
   SCHEDULE.forEach(week => {
-    const wDiv = document.createElement('div');
+    // 주별로 독립 스크롤 영역 생성
+    const weekWrap = document.createElement('div');
+    weekWrap.style.borderBottom = '1px solid var(--border)';
 
     const wLabel = document.createElement('div');
     wLabel.className = 'cal-week-label';
     wLabel.textContent = week.label;
-    wDiv.appendChild(wLabel);
+    weekWrap.appendChild(wLabel);
+
+    // 날짜 행들을 감싸는 가로 스크롤 영역
+    const scrollDiv = document.createElement('div');
+    scrollDiv.style.overflowX = 'auto';
+    scrollDiv.style.webkitOverflowScrolling = 'touch';
 
     ['p1','p2'].forEach(period => {
       const hasAny = week.days.some(d => d[period]);
@@ -984,7 +1019,7 @@ function renderCalendar() {
 
       const row = document.createElement('div');
       row.className = `cal-slot-row ${period === 'p1' ? 'row-p1' : 'row-p2'}`;
-      row.style.gridTemplateColumns = `72px repeat(${week.days.length}, 1fr)`;
+      row.style.gridTemplateColumns = `56px repeat(${week.days.length}, minmax(68px, 1fr))`;
 
       const timeCol = document.createElement('div');
       timeCol.className = 'cal-time-col';
@@ -1015,15 +1050,15 @@ function renderCalendar() {
           const remain   = MAX_PER_SLOT - count;
 
           let cls = 'slot';
-          if (isPicked)   cls += ' picked';
+          if (isPicked)    cls += ' picked';
           else if (isFull) cls += ' full';
 
-          const timeText  = period === 'p1' ? '10:00~12:00' : '13:00~15:00';
+          const timeText = period === 'p1' ? '10:00~12:00' : '13:00~15:00';
           let countText;
-          if (isPicked)       countText = `✓ 선택됨 (${count}/${MAX_PER_SLOT})`;
-          else if (isFull)    countText = `마감 (${MAX_PER_SLOT}/${MAX_PER_SLOT})`;
-          else if (remain <= 2) countText = `잔여 ${remain}자리`;
-          else                countText = `${count}/${MAX_PER_SLOT}명`;
+          if (isPicked)         countText = `✓ (${count}/${MAX_PER_SLOT})`;
+          else if (isFull)      countText = `마감`;
+          else if (remain <= 2) countText = `잔여 ${remain}`;
+          else                  countText = `${count}/${MAX_PER_SLOT}`;
 
           btn.className = cls;
           btn.innerHTML = `<span class="slot-time">${timeText}</span><span class="slot-count">${countText}</span>`;
@@ -1039,10 +1074,11 @@ function renderCalendar() {
         row.appendChild(col);
       });
 
-      wDiv.appendChild(row);
+      scrollDiv.appendChild(row);
     });
 
-    wrap.appendChild(wDiv);
+    weekWrap.appendChild(scrollDiv);
+    wrap.appendChild(weekWrap);
   });
 
   updatePickedUI();
