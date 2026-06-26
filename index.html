@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -858,7 +859,7 @@
 
 <script>
 // ── 설정 ──────────────────────────────────────────────
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbybxSz45l47IqpcNudcw9dJu2sgvoAwq7-1gqcZ80woi9w1UKh5XNt1DsQhq_2A3WRhVw/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwE7NcPbO4dyCCYkqy_twjjriQEQm-uFOzRUqrVIrxwEvB-O8rA3THAKnpml8owd_spdw/exec';
 const MAX_PER_SLOT = 6; // 교시당 최대 수강 인원
 
 // ── 교시별 현재 신청 인원 (GAS에서 불러오거나 직접 관리)
@@ -1210,6 +1211,7 @@ function renderConfirm() {
     <tr><td>보호자 연락처</td><td>${v('fPhone')}</td></tr>
     ${v('fStudentPhone') && v('fStudentPhone') !== '—' ? `<tr><td>학생 연락처</td><td>${v('fStudentPhone')}</td></tr>` : ''}
     <tr><td>결제 방법</td><td>${(() => { const el = document.querySelector('input[name="payment"]:checked'); return el ? el.value : '—'; })()}</td></tr>
+    ${v('receipt-num') && v('receipt-num') !== '—' ? `<tr><td>현금영수증</td><td>${v('receipt-num')}</td></tr>` : ''}
     ${v('fNote') && v('fNote') !== '—' ? `<tr><td>특이사항</td><td>${v('fNote')}</td></tr>` : ''}
   `;
 }
