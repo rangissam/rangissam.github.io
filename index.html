@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방학 특강 수강 신청  — 랑이쌤컴퓨터교습소</title>
+<style>
+  /* ── 기본 리셋 & 변수 ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:           #f7f8fc;
+    --surface:      #ffffff;
+    --border:       #e4e6ef;
+    --border2:      #c8ccdf;
+    --text:         #1a1d2e;
+    --muted:        #6b7280;
+    --hint:         #9ca3af;
+    --accent:       #00009D;
+    --accent-dark:  #000070;
+    --accent-light: #E8E8FA;
+    --color-yellow: #FEC700;
+    --color-pink:   #C81653;
+    --color-green:  #7CAF11;
+    --radius:       10px;
+    --radius-lg:    14px;
+    --shadow:       0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+  }
+
+  body {
+    font-family: 'Pretendard Variable', 'Pretendard', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  /* ── 헤더 ── */
+  header {
+    background: var(--accent);
+    border-bottom: none;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .header-logo-img  {
+    height: 40px; width: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+    padding: 2px;
+  }
+  .header-logo-img.placeholder {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; background: #fff;
+  }
+  .logo {
+    font-size: 16px; font-weight: 700;
+    color: #ffffff; letter-spacing: -.3px;
+  }
+  .logo span { color: rgba(255,255,255,.75); font-weight: 400; }
+  .header-nav { display: flex; align-items: center; gap: 16px; }
+  .header-nav a {
+    font-size: 13px; color: rgba(255,255,255,.8);
+    text-decoration: none; transition: color .15s;
+  }
+  .header-nav a:hover { color: #ffffff; }
+  .header-admin { font-size: 13px; color: rgba(255,255,255,.8); text-decoration: none; }
+  .header-admin:hover { color: #ffffff; }
+
+  /* ── 컨테이너 ── */
+  .container { max-width: 720px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  /* ── 상단 안내 ── */
+  .page-intro {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .page-intro .badge {
+    display: inline-block;
+    font-size: 14px; font-weight: 600;
+    color: var(--accent); background: var(--accent-light);
+    padding: 4px 12px; border-radius: 20px;
+    margin-bottom: 10px; letter-spacing: .02em;
+  }
+  .page-intro h1 { font-size: 26px; font-weight: 700; letter-spacing: -.4px; margin-bottom: 6px; }
+  .page-intro p  { font-size: 16px; color: var(--muted); }
+
+  /* ── 진행 단계 ── */
+  .steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 28px;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+  }
+  .step-circle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700;
+    background: var(--border);
+    color: var(--hint);
+    transition: all .2s;
+  }
+  .step.active .step-circle  { background: var(--accent); color: #fff; }
+  .step.done   .step-circle  { background: #22c55e; color: #fff; }
+  .step-label {
+    font-size: 13px; color: var(--hint);
+    white-space: nowrap;
+    transition: color .2s;
+  }
+  .step.active .step-label { color: var(--accent); font-weight: 600; }
+  .step.done   .step-label { color: #16a34a; }
+  .step-line {
+    width: 48px; height: 1px;
+    background: var(--border);
+    margin-bottom: 20px;
+    flex-shrink: 0;
+  }
+  .step-line.done { background: #22c55e; }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 17px; font-weight: 700;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title i { font-size: 18px; }
+
+  /* ── 과정 선택 카드 ── */
+  .course-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  @media(max-width: 500px){ .course-grid{ grid-template-columns: 1fr; } }
+  .course-grid .course-item:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .course-item {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 14px;
+    cursor: pointer;
+    transition: all .15s;
+    user-select: none;
+  }
+  .course-item:hover { border-color: var(--accent); background: var(--accent-light); }
+  .course-item.selected { border-color: var(--accent); background: var(--accent-light); }
+
+  .course-top  { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .course-icon { font-size: 22px; }
+  .course-name { font-size: 15px; font-weight: 600; color: var(--text); flex: 1; }
+  .course-badge{
+    font-size: 13px; font-weight: 600;
+    padding: 2px 8px; border-radius: 20px;
+    background: #f3f4f6; color: var(--muted);
+    white-space: nowrap;
+  }
+  .course-item.selected .course-badge { background: var(--accent); color: #fff; }
+  .course-learn {
+    font-size: 13px; color: var(--text);
+    line-height: 1.55; margin-bottom: 6px;
+  }
+  .course-learn strong { font-weight: 600; color: var(--accent); font-size: 12px; display: block; margin-bottom: 1px; }
+  .course-target {
+    font-size: 13px; color: var(--muted);
+    line-height: 1.55;
+    padding-top: 6px;
+    border-top: 1px dashed var(--border);
+  }
+  .course-target strong { font-weight: 600; color: var(--muted); font-size: 12px; display: block; margin-bottom: 1px; }
+
+  .cal-notice {
+    background: #fefce8; border: 1px solid #fde68a;
+    border-radius: var(--radius);
+    padding: 10px 13px; font-size: 15px; color: #92400e;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .progress-bar-wrap { margin-bottom: 14px; }
+  .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 15px; color: var(--muted); margin-bottom: 6px;
+  }
+  .progress-label span:last-child { font-weight: 600; color: var(--accent); }
+  .progress-bg { background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
+  .progress-fill {
+    height: 100%; background: var(--accent); border-radius: 4px;
+    transition: width .3s ease;
+  }
+
+  .picked-chips { display: flex; flex-wrap: wrap; gap: 6px; min-height: 32px; margin-bottom: 14px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 14px; font-weight: 500;
+    background: var(--accent-light); color: var(--accent);
+    border: 1px solid #c7cffa;
+    padding: 4px 10px; border-radius: 20px;
+    cursor: pointer; transition: background .1s;
+  }
+  .chip:hover { background: #d0d0f0; }
+  .chip .rm { font-size: 15px; opacity: .6; }
+  .chip-empty { font-size: 15px; color: var(--hint); align-self: center; }
+
+  .cal-wrapper { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .cal-week-label {
+    background: #f8f9fb; border-bottom: 1px solid var(--border);
+    padding: 7px 12px; font-size: 14px; font-weight: 600; color: var(--muted);
+  }
+
+  .cal-slot-row {
+    display: grid; border-bottom: 1px solid var(--border);
+  }
+  .cal-slot-row:last-child { border-bottom: none; }
+  .cal-slot-row.row-p1 { background: #ffffff; }
+  .cal-slot-row.row-p2 { background: #f5f7ff; }
+
+  .cal-time-col {
+    background: rgba(0,0,0,.03);
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    padding: 8px 6px; border-right: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; line-height: 1.4;
+    min-width: 72px;
+  }
+  .cal-day-col { border-right: 1px solid var(--border); }
+  .cal-day-col:last-child { border-right: none; }
+
+  .cal-day-head {
+    font-size: 13px; font-weight: 600; color: var(--muted);
+    text-align: center; padding: 7px 4px;
+    background: rgba(0,0,0,.025); border-bottom: 1px solid var(--border);
+  }
+
+  .slot {
+    margin: 5px 5px 2px;
+    padding: 6px 4px 4px;
+    border-radius: 7px;
+    font-size: 12px; font-weight: 500; text-align: center;
+    cursor: pointer; transition: all .12s;
+    border: 1.5px solid var(--border);
+    background: var(--surface); color: var(--muted);
+    line-height: 1.3;
+  }
+  .slot .slot-time { display: block; font-size: 12px; }
+  .slot .slot-count {
+    display: block; font-size: 11px; margin-top: 3px;
+    font-weight: 600; color: #16a34a;
+  }
+  .slot:hover:not(.full):not(.closed) { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+  .slot:hover:not(.full):not(.closed) .slot-count { color: var(--accent); }
+  .slot.picked { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .slot.picked .slot-count { color: #c7d8ff; }
+  .slot.full {
+    background: #fef2f2; border-color: #fca5a5; color: #b91c1c;
+    cursor: not-allowed;
+  }
+  .slot.full .slot-count { color: #ef4444; }
+  .slot.closed {
+    background: none; border-color: transparent;
+    color: var(--hint); cursor: default; opacity: .4;
+  }
+  .slot.closed:hover { background: none; }
+
+  /* ── 폼 ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media(max-width: 500px){ .form-grid{ grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 2px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-group label { font-size: 15px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 4px; }
+  .form-group label .req { color: #e34f4f; }
+  .form-group label .opt { color: var(--muted); font-weight: 400; font-size: 13px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-size: 17px; color: var(--text); background: var(--surface);
+    transition: border-color .18s, box-shadow .18s;
+    outline: none; font-family: inherit;
+    appearance: none; -webkit-appearance: none;
+  }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: #b0b7c3; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,157,.12);
+  }
+  .form-group input.error, .form-group select.error, .form-group textarea.error { border-color: #e34f4f; }
+  .form-group textarea { resize: vertical; min-height: 80px; line-height: 1.5; padding: 11px 14px; }
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: ''; position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent; border-right: 5px solid transparent;
+    border-top: 6px solid var(--muted); pointer-events: none;
+  }
+  .select-wrap select { padding-right: 36px; }
+  .field-err { font-size: 14px; color: #e34f4f; margin-top: 2px; display: none; }
+  .field-err.visible { display: block; }
+
+  /* ── 확인 박스 ── */
+  .confirm-table { width: 100%; border-collapse: collapse; }
+  .confirm-table tr { border-bottom: 1px solid var(--border); }
+  .confirm-table tr:last-child { border-bottom: none; }
+  .confirm-table td { padding: 10px 4px; font-size: 16px; vertical-align: top; }
+  .confirm-table td:first-child { color: var(--muted); font-size: 15px; width: 110px; padding-right: 12px; }
+  .schedule-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+  .sch-chip {
+    font-size: 14px; font-weight: 500;
+    padding: 3px 9px; border-radius: 20px;
+    background: var(--accent-light); color: var(--accent);
+  }
+
+  /* ── 버튼 ── */
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px; border-radius: var(--radius);
+    font-size: 16px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+    border: 1.5px solid var(--border2);
+    background: var(--surface); color: var(--text);
+    font-family: inherit;
+  }
+  .btn:hover { background: var(--bg); }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-primary:hover { background: var(--accent-dark); border-color: var(--accent-dark); }
+  .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-success {
+    background: var(--color-green); color: #fff; border-color: #5a8a0a;
+  }
+  .btn-success:hover { background: #5a8a0a; }
+
+  /* ── 완료 화면 ── */
+  .success-wrap {
+    text-align: center; padding: 48px 20px;
+  }
+  .success-icon {
+    width: 64px; height: 64px;
+    background: #dcfce7; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+  }
+  .success-wrap h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .success-wrap p  { font-size: 16px; color: var(--muted); line-height: 1.7; }
+  .app-no {
+    display: inline-block;
+    font-size: 24px; font-weight: 800; color: var(--accent);
+    background: var(--accent-light); border-radius: var(--radius);
+    padding: 8px 24px; margin: 16px 0;
+    letter-spacing: .05em;
+  }
+
+  /* ── 유틸 ── */
+  .hidden { display: none !important; }
+  .loading { opacity: .6; pointer-events: none; }
+
+  /* ── STEP3 class-registration 스타일 ── */
+  .section-title {
+    font-size: 14px; font-weight: 600;
+    color: var(--accent); letter-spacing: .05em; text-transform: uppercase;
+    margin-bottom: 18px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .field label {
+    display: block; font-size: 15px; font-weight: 600;
+    color: var(--text); margin-bottom: 7px;
+  }
+  .field label .req { color: #e34f4f; margin-left: 2px; }
+  .field label .opt { color: var(--muted); font-weight: 400; font-size: 13px; margin-left: 4px; }
+  .field input[type="text"],
+  .field input[type="tel"],
+  .field select,
+  .field textarea {
+    width: 100%; padding: 11px 14px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    font-family: inherit; font-size: 17px; color: var(--text);
+    background: #fff; outline: none;
+    transition: border-color .18s, box-shadow .18s;
+    appearance: none; -webkit-appearance: none;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: #b0b7c3; }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,0,157,.12);
+  }
+  .field input.error, .field select.error { border-color: #e34f4f; }
+  .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+  .field .field-error { font-size: 13px; color: #e34f4f; margin-top: 5px; display: none; }
+  .field .field-error.visible { display: block; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media(max-width: 480px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* 안내 카드 */
+  .intro-card {
+    background: linear-gradient(135deg, var(--accent-light) 0%, #dcdcf8 100%);
+    border: 1px solid #b0b0e8;
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    font-size: 15px; line-height: 1.8; color: #1a1d2e;
+  }
+  .intro-card .intro-icon { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .intro-card ul { padding-left: 18px; margin-bottom: 8px; }
+  .intro-card p  { font-weight: 600; margin-top: 8px; margin-bottom: 2px; }
+  .intro-card a  { color: var(--accent); }
+
+  /* 라디오 카드 */
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-card {
+    flex: 1; min-width: 140px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    cursor: pointer; transition: border-color .15s, background .15s;
+    user-select: none;
+  }
+  .radio-card input[type="radio"] {
+    width: 18px; height: 18px;
+    accent-color: var(--accent); flex-shrink: 0; cursor: pointer;
+  }
+  .radio-card:has(input:checked) { border-color: var(--accent); background: var(--accent-light); }
+  .radio-card span { font-size: 16px; font-weight: 500; }
+
+  /* 결제 상세 영역 */
+  .payment-detail { margin-top: 14px; border-radius: 8px; overflow: hidden; display: none; }
+  .payment-detail.visible { display: block; }
+
+  .bank-info {
+    background: #eef0fa; border: 1px solid #b0b0e8;
+    border-radius: 8px; padding: 16px 18px; margin-bottom: 12px;
+  }
+  .bank-info .bank-title {
+    font-size: 14px; font-weight: 600; color: var(--accent);
+    letter-spacing: .04em; margin-bottom: 10px;
+  }
+  .bank-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid #c8c8f0; font-size: 16px;
+  }
+  .bank-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .bank-row .bk-label {
+    width: 72px; flex-shrink: 0;
+    font-size: 14px; font-weight: 600; color: var(--muted);
+  }
+  .bank-row .bk-value { font-weight: 600; color: var(--text); }
+  .btn-copy {
+    margin-left: auto; padding: 4px 10px;
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    background: #fff; border: 1px solid #b0b0e8;
+    border-radius: 5px; cursor: pointer; transition: background .15s; font-family: inherit;
+  }
+  .btn-copy:hover { background: var(--accent-light); }
+  .btn-copy.copied { color: #15803d; border-color: #a7e0c8; }
+
+  .receipt-inner {
+    background: var(--bg); border: 1px dashed #b0b0e8;
+    border-radius: 8px; padding: 16px 18px;
+  }
+
+  .card-info {
+    background: #f5f0ff; border: 1px solid #d4c5f5;
+    border-radius: 8px; padding: 16px 18px;
+  }
+  .card-info .card-pay-title {
+    font-size: 14px; font-weight: 600; color: #5c3dc0;
+    letter-spacing: .04em; margin-bottom: 8px;
+  }
+  .card-info .card-pay-body { font-size: 15px; line-height: 1.8; color: #3d2a6e; }
+  .card-info .card-pay-body p { margin-bottom: 2px; }
+
+  /* 안내사항 박스 */
+  .notice-box {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 16px; font-size: 15px; line-height: 1.8;
+    color: #1a1d2e; margin-bottom: 16px;
+  }
+  .notice-box p { margin-bottom: 4px; }
+  .notice-box p:last-child { margin-bottom: 0; }
+
+  /* 동의 체크박스 */
+  .check-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    cursor: pointer; transition: border-color .15s, background .15s;
+  }
+  .check-row:has(input:checked) { border-color: var(--accent); background: var(--accent-light); }
+  .check-row input[type="checkbox"] {
+    width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px;
+    accent-color: var(--accent); cursor: pointer;
+  }
+  .check-row .check-label { font-size: 16px; font-weight: 500; line-height: 1.4; }
+  .check-row .check-sub { font-size: 14px; color: var(--muted); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="header-logo-wrap">
+    <img src="logo.png" alt="랑이쌤컴퓨터교습소 로고" class="header-logo-img"
+         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+    <div class="header-logo-img placeholder" style="display:none">🎓</div>
+    <div class="logo">랑이쌤컴퓨터 <span>방학 특강 수강 신청</span></div>
+  </a>
+  <div class="header-nav">
+    <a href="curriculum-guide.html">📋 추천 커리큘럼 보기</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- 상단 안내 -->
+  <div class="page-intro">
+    <div class="badge">2026 여름방학 특강</div>
+    <h1>수강 신청</h1>
+    <p>원하는 과정과 수업 날짜를 직접 선택하세요.</p>
+  </div>
+
+  <!-- 진행 단계 -->
+  <div class="steps" id="stepsEl">
+    <div class="step active" id="step1">
+      <div class="step-circle">1</div>
+      <div class="step-label">과정 선택</div>
+    </div>
+    <div class="step-line" id="line12"></div>
+    <div class="step" id="step2">
+      <div class="step-circle">2</div>
+      <div class="step-label">수업 일정</div>
+    </div>
+    <div class="step-line" id="line23"></div>
+    <div class="step" id="step3">
+      <div class="step-circle">3</div>
+      <div class="step-label">학생 정보</div>
+    </div>
+    <div class="step-line" id="line34"></div>
+    <div class="step" id="step4">
+      <div class="step-circle">4</div>
+      <div class="step-label">최종 확인</div>
+    </div>
+  </div>
+
+  <!-- ===== STEP 1: 과정 선택 ===== -->
+  <div id="s1">
+    <div class="card">
+      <div class="card-title">📚 수강할 과정을 선택하세요 -  초 1~3학년은 80분 수업 / 초 4 이상은 120분수업</div>
+      <div class="course-grid" id="courseGrid">
+        <div class="course-item" data-id="dl" data-name="디지털 리터러시 과정" data-sessions="4" onclick="selectCourse(this)">
+          <div class="course-top"><span class="course-icon">🧭</span><span class="course-name">디지털 리터러시 과정</span><span class="course-badge">4회차</span></div>
+          <div class="course-learn"><strong>📖 배우는 내용</strong>컴퓨터 파일 관리, 인터넷 정보 검색과 출처 확인,<br>클라우드 활용, AI 도구 체험과 올바른 사용법</div>
+          <div class="course-target"><strong>🎯 이런 학생에게 추천</strong>컴퓨터가 낯설거나 처음 배우는 학생,<br>다른 과정을 수강하기 전 기초를 다지고 싶은 학생</div>
+        </div>
+        <div class="course-item" data-id="ppt" data-name="파워포인트 과정" data-sessions="6" onclick="selectCourse(this)">
+          <div class="course-top"><span class="course-icon">📊</span><span class="course-name">파워포인트 과정</span><span class="course-badge">6회차</span></div>
+          <div class="course-learn"><strong>📖 배우는 내용</strong>슬라이드 레이아웃·디자인, 이미지·차트 활용,<br>애니메이션 효과, 발표자 노트 작성과 발표 연습</div>
+          <div class="course-target"><strong>🎯 이런 학생에게 추천</strong>발표형 수행평가가 있는 초·중학생,<br>PPT를 보기 좋게 만들고 싶은 학생</div>
+        </div>
+        <div class="course-item" data-id="vid" data-name="동영상 편집 과정(PPT 활용)" data-sessions="6" onclick="selectCourse(this)">
+          <div class="course-top"><span class="course-icon">🎬</span><span class="course-name">동영상 편집 과정</span><span class="course-badge">6회차</span></div>
+          <div class="course-learn"><strong>📖 배우는 내용</strong>PPT 애니메이션·전환효과로 영상처럼 만들기,<br>나레이션 녹음·배경음악 삽입, MP4로 내보내기·제출</div>
+          <div class="course-target"><strong>🎯 이런 학생에게 추천</strong>영상 파일 제출형 수행평가(UCC·홍보 영상)가 있는 학생,<br>별도 편집 프로그램 없이 PPT 하나로 영상을 완성하고 싶은 학생</div>
+        </div>
+        <div class="course-item" data-id="hwp" data-name="한글 보고서 과정" data-sessions="6" onclick="selectCourse(this)">
+          <div class="course-top"><span class="course-icon">📝</span><span class="course-name">한글 보고서 과정</span><span class="course-badge">6회차</span></div>
+          <div class="course-learn"><strong>📖 배우는 내용</strong>한글 문서 설정·스타일·자동 목차, 표·그림 삽입,<br>보고서 구조(서론·본론·결론) 작성과 PDF 제출</div>
+          <div class="course-target"><strong>🎯 이런 학생에게 추천</strong>탐구·실험 보고서 수행평가가 있는 학생,<br>규격에 맞는 보고서를 직접 완성하고 싶은 학생</div>
+        </div>
+        <div class="course-item" data-id="ai" data-name="AI 활용 과정" data-sessions="4" onclick="selectCourse(this)">
+          <div class="course-top"><span class="course-icon">🤖</span><span class="course-name">AI 활용 과정</span><span class="course-badge">4회차</span></div>
+          <div class="course-learn"><strong>📖 배우는 내용</strong>AI 프롬프트 설계·답변 검증, AI로 공부 자료 만들기,<br>AI와 함께 나만의 웹앱(단어장·스케줄러 등) 직접 제작</div>
+          <div class="course-target"><strong>🎯 이런 학생에게 추천</strong>AI를 제대로 활용하고 싶은 초·중학생,<br>코딩 몰라도 AI로 나만의 공부 도구를 만들어보고 싶은 학생</div>
+        </div>
+        <div class="course-item" data-id="ent" data-name="엔트리 블록코딩 과정" data-sessions="6" onclick="selectCourse(this)">
+          <div class="course-top"><span class="course-icon">🟢</span><span class="course-name">엔트리 블록코딩 과정</span><span class="course-badge">6회차</span></div>
+          <div class="course-learn"><strong>📖 배우는 내용</strong>엔트리 블록으로 순서·반복·조건 구현,<br>변수·신호·충돌 감지, 미니 게임·퀴즈 프로그램 완성</div>
+          <div class="course-target"><strong>🎯 이런 학생에게 추천</strong>코딩을 처음 접하는 초·중학생,<br>블록코딩 수행평가나 소프트웨어 과목이 있는 학생</div>
+        </div>
+        <div class="course-item" data-id="py" data-name="파이썬 기초문법 과정" data-sessions="8" onclick="selectCourse(this)">
+          <div class="course-top"><span class="course-icon">🐍</span><span class="course-name">파이썬 기초문법 과정</span><span class="course-badge">8회차</span></div>
+          <div class="course-learn"><strong>📖 배우는 내용</strong>변수·조건·반복·함수 기초 문법, random·turtle 모듈,<br>up-down 게임 또는 BMI 계산기 미니 프로젝트 완성</div>
+          <div class="course-target"><strong>🎯 이런 학생에게 추천</strong>텍스트 코딩을 처음 경험하는 중학생 이상,<br>파이썬 기초 수행평가나 정보 과목을 준비하는 학생</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-row">
+      <span></span>
+      <button class="btn btn-primary" onclick="go(2)">수업 일정 선택 →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: 수업 일정 ===== -->
+  <div id="s2" class="hidden">
+    <div class="card">
+      <div class="card-title" id="calTitle">📅 수업 날짜를 선택하세요</div>
+
+      <div class="cal-notice">
+        ⚠️ 수업일을 선택하지 않은 회차는 원장님과 상담 후 조율됩니다.
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-label">
+          <span id="progressText">0개 선택됨</span>
+          <span id="progressGoal"></span>
+        </div>
+        <div class="progress-bg"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+
+      <div class="picked-chips" id="pickedChips">
+        <span class="chip-empty">날짜를 클릭해서 선택하세요</span>
+      </div>
+
+      <!-- 캘린더 -->
+      <div class="cal-wrapper" id="calWrapper"></div>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="go(1)">← 이전</button>
+      <button class="btn btn-primary" id="btnNext2" onclick="go(3)">학생 정보 입력 →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 3: 학생 정보 ===== -->
+  <div id="s3" class="hidden">
+
+    <!-- 신청 전 안내 -->
+    <div class="intro-card">
+      <div class="intro-icon">📋 신청 전 꼭 읽어주세요</div>
+      <p>📌 신청 및 결제 안내</p>
+      <ul>
+        <li>신청서 작성 후 <strong>결제까지 완료되어야 수업이 확정됩니다.</strong></li>
+        <li>각 반 결제 <strong>선착순</strong>으로 수업이 확정됩니다.(최대 6명)</li>
+        <li>개강 전 수업 취소 시에는 전액 환불됩니다.</li>
+        <li>개강 후 수업 취소 시에는 서울교육청 환불 규정에 따라 처리됩니다.</li>
+      </ul>
+      <p>📌 결석 및 보강 안내</p>
+      <ul>
+        <li>결석 시 <strong>하루 전까지</strong> 미리 연락주시면 <strong>1회에 한해</strong> 보강합니다.</li>
+        <li>보강은 다음 수업 회차 전까지, 공석이 있을 시에만 가능합니다.</li>
+        <li><strong style="color:#C81653;">당일 연락이나 무단 결석은 수업을 한 것으로 인정합니다.</strong></li>
+      </ul>
+      <p>📌 문의 사항</p>
+      <ul>
+        <li><b>010-7755-6345</b>로 <strong>문자나 카카오톡</strong> 주시면 확인 후 바로 연락 드립니다.</li>
+        <li>수업 중일 경우 통화가 되지 않으니 양해 부탁드립니다.</li>
+      </ul>
+    </div>
+
+    <!-- 학생 정보 카드 -->
+    <div class="card">
+      <div class="section-title">학생 정보</div>
+
+      <div class="two-col">
+        <div class="field">
+          <label for="fName">학생 이름 <span class="req">*</span></label>
+          <input type="text" id="fName" placeholder="홍길동" autocomplete="off">
+          <div class="field-error" id="errName">이름을 입력해 주세요.</div>
+        </div>
+        <div class="field">
+          <label for="fBirth">생년월일 <span class="req">*</span></label>
+          <input type="text" id="fBirth" placeholder="2010.05.20" maxlength="10" autocomplete="off">
+          <div class="field-error" id="errBirth">생년월일을 입력해 주세요. (예: 2010.05.20)</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label for="fSchool">학교 <span class="req">*</span></label>
+          <input type="text" id="fSchool" placeholder="○○학교" autocomplete="off">
+          <div class="field-error" id="errSchool">학교명을 입력해 주세요.</div>
+        </div>
+        <div class="field">
+          <label for="fGrade">학년 <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="fGrade">
+              <option value="">선택</option>
+              <optgroup label="초등학교">
+                <option>초1</option><option>초2</option><option>초3</option>
+                <option>초4</option><option>초5</option><option>초6</option>
+              </optgroup>
+              <optgroup label="중학교">
+                <option>중1</option><option>중2</option><option>중3</option>
+              </optgroup>
+              <optgroup label="고등학교">
+                <option>고1</option><option>고2</option><option>고3</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="field-error" id="errGrade">학년을 선택해 주세요.</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field">
+          <label for="fPhone">부모님 연락처 <span class="req">*</span></label>
+          <input type="tel" id="fPhone" placeholder="010-0000-0000">
+          <div class="field-error" id="errPhone">올바른 연락처를 입력해 주세요.</div>
+        </div>
+        <div class="field">
+          <label for="fStudentPhone">학생 연락처 <span class="opt">(선택)</span></label>
+          <input type="tel" id="fStudentPhone" placeholder="010-0000-0000">
+        </div>
+      </div>
+    </div>
+
+    <!-- 결제 방식 카드 -->
+    <div class="card">
+      <div class="section-title">결제 방식</div>
+
+      <div class="field">
+        <label>결제 방법 선택 <span class="req">*</span></label>
+        <div class="radio-group">
+          <label class="radio-card">
+            <input type="radio" name="payment" value="계좌이체" id="pay-transfer">
+            <span>🏦 계좌이체</span>
+          </label>
+          <label class="radio-card">
+            <input type="radio" name="payment" value="비대면 카드결제" id="pay-card">
+            <span>💳 비대면 카드결제</span>
+          </label>
+        </div>
+        <div class="field-error" id="errPayment">결제 방법을 선택해 주세요.</div>
+      </div>
+
+      <!-- 계좌이체 상세 -->
+      <div class="payment-detail" id="transfer-detail">
+        <div class="bank-info">
+          <div class="bank-title">🏦 입금 계좌 안내</div>
+          <div class="bank-row">
+            <span class="bk-label">은행</span>
+            <span class="bk-value">SC제일은행</span>
+          </div>
+          <div class="bank-row">
+            <span class="bk-label">계좌번호</span>
+            <span class="bk-value" id="account-num">243-20-156687</span>
+            <button class="btn-copy" onclick="copyAccount()">복사</button>
+          </div>
+          <div class="bank-row">
+            <span class="bk-label">예금주</span>
+            <span class="bk-value">하승아</span>
+          </div>
+          <div class="bank-row">
+            <span class="bk-label">입금기한</span>
+            <span class="bk-value" style="color:#e34f4f;">신청서 접수 후 24시간 이내</span>
+          </div>
+        </div>
+        <div class="receipt-inner">
+          <div class="field" style="margin-bottom:0;">
+            <label for="receipt-num">현금영수증 번호 <span class="opt">(선택)</span></label>
+            <input type="tel" id="receipt-num" placeholder="휴대폰 번호 또는 사업자번호">
+            <p style="font-size:13px;color:var(--muted);margin-top:6px;">미입력에는 신청해 주신 부모님 핸드폰번호로 발행됩니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 비대면 카드결제 상세 -->
+      <div class="payment-detail" id="card-detail">
+        <div class="card-info">
+          <div class="card-pay-title">💳 비대면 카드결제 안내</div>
+          <div class="card-pay-body">
+            <p>· 신청 완료 후 카드결제 링크를 카카오톡 결제선생으로 발송해 드립니다.</p>
+            <p>· 링크 수신 후 24시간 이내에 결제를 완료해 주세요.</p>
+            <p>· 결제가 완료되면 수업이 확정됩니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 안내사항 확인 카드 -->
+    <div class="card">
+      <div class="section-title">안내사항 확인</div>
+      <div class="notice-box">
+        <p>📍 개강 전 수업 취소시에는 전액 환불됩니다.</p>
+        <p>📍 개강 후 수업 취소시에는 서울교육청 환불 규정에 따라 처리됩니다.(당일 취소는 수업을 한 것으로 간주됩니다.)</p>
+        <p>📍수업 결석시에는 하루 전까지 미리 연락 주세요.</p>
+        <p>📍 미리 연락(하루전까지)을 주신 경우 1회에 한하여 보강 진행합니다. (보강을 원하는 시간대에 공석이 있을시)</p>
+        <p>📍 1회 이상은 보강하지 않으며 수업 당일 연락시 혹은 무단결석일 경우에는 수업을 한 것으로 인정합니다.</p>
+      </div>
+      <div class="field" style="margin-bottom:0;">
+        <label class="check-row" for="agree">
+          <input type="checkbox" id="agree">
+            <span class="check-label"> 위 안내사항을 모두 확인하였습니다. <span class="req">*</span>
+        </label>
+        <div class="field-error" id="errAgree">안내사항 확인에 동의해 주세요.</div>
+      </div>
+    </div>
+
+    <!-- 문의 / 부탁 말씀 카드 -->
+    <div class="card">
+      <div class="section-title">문의 / 부탁 말씀</div>
+      <div class="field" style="margin-bottom:0;">
+        <label for="fNote">문의사항 또는 수업 시 부탁하실 말씀 <span class="opt">(선택)</span></label>
+        <textarea id="fNote" placeholder="예) 수업 시간 조율 문의, 특정 취약 단원 집중 요청 등 자유롭게 작성해 주세요."></textarea>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn" onclick="go(2)">← 이전</button>
+      <button class="btn btn-primary" onclick="go(4)">신청 내용 확인 →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 4: 최종 확인 ===== -->
+  <div id="s4" class="hidden">
+    <div class="card">
+      <div class="card-title">✅ 신청 내용을 확인해주세요</div>
+      <table class="confirm-table" id="confirmTable"></table>
+    </div>
+    <div class="nav-row">
+      <button class="btn" onclick="go(3)">← 이전</button>
+      <button class="btn btn-success" id="btnSubmit" onclick="submitForm()">신청 완료</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 5: 완료 ===== -->
+  <div id="s5" class="hidden">
+    <div class="card">
+      <div class="success-wrap">
+        <div class="success-icon">✅</div>
+        <h2>수강 신청 완료!</h2>
+        <div class="app-no" id="appNoDisplay"></div>
+        <p id="successDetail"></p>
+        <br>
+        <button class="btn btn-primary" onclick="resetForm()">처음으로 돌아가기</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── 설정 ──────────────────────────────────────────────
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwd9Emn8-MILa6urNR8lnZywCPZVIHuFVhOUPPqc7o8IwuRFAdu46J5g706Osdmw3WaKg/exec';
+const MAX_PER_SLOT = 6; // 교시당 최대 수강 인원
+
+// ── 교시별 현재 신청 인원 (GAS에서 불러오거나 직접 관리)
+// 키: '날짜key_교시key' (예: '7.27_p1'), 값: 현재 신청 인원 수
+// 실제 운영 시 loadSlotCounts()로 서버에서 가져옴
+// 테스트용 초기값 — 배포 후 실제 신청 인원으로 자동 반영됨
+let slotCounts = {};
+
+// ── 일정 데이터 ────────────────────────────────────────
+const SCHEDULE = [
+  {
+    weekLabel: '7월 27일 (월) ~ 29일 (수)',
+    days: [
+      { label: '7/27 (월)', key: '7.27', p1: true, p2: true },
+      { label: '7/28 (화)', key: '7.28', p1: true, p2: true },
+      { label: '7/29 (수)', key: '7.29', p1: true, p2: true },
+    ]
+  },
+  {
+    weekLabel: '8월 3일 (월) ~ 7일 (금)',
+    days: [
+      { label: '8/3 (월)',  key: '8.3',  p1: true,  p2: true  },
+      { label: '8/4 (화)',  key: '8.4',  p1: true,  p2: true  },
+      { label: '8/5 (수)',  key: '8.5',  p1: true,  p2: true  },
+      { label: '8/6 (목)',  key: '8.6',  p1: true,  p2: false },
+      { label: '8/7 (금)',  key: '8.7',  p1: true,  p2: false },
+    ]
+  },
+  {
+    weekLabel: '8월 10일 (월) ~ 14일 (금)',
+    days: [
+      { label: '8/10 (월)', key: '8.10', p1: true,  p2: true  },
+      { label: '8/11 (화)', key: '8.11', p1: true,  p2: true  },
+      { label: '8/12 (수)', key: '8.12', p1: true,  p2: true  },
+      { label: '8/13 (목)', key: '8.13', p1: true,  p2: false },
+      { label: '8/14 (금)', key: '8.14', p1: true,  p2: false },
+    ]
+  }
+];
+
+// ── 상태 ───────────────────────────────────────────────
+let state = {
+  step: 1,
+  courseId: null,
+  courseName: '',
+  sessions: 0,
+  picked: []   // 예: ['7.27_p1', '8.4_p2', ...]
+};
+
+// ── 과정 선택 ──────────────────────────────────────────
+function selectCourse(el) {
+  document.querySelectorAll('.course-item').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.courseId   = el.dataset.id;
+  state.courseName = el.dataset.name;
+  state.sessions   = parseInt(el.dataset.sessions);
+  state.picked     = [];
+}
+
+// ── 단계 이동 ──────────────────────────────────────────
+function go(n) {
+  if (n === 2) {
+    if (!state.courseId) { alert('과정을 선택해주세요.'); return; }
+    loadSlotCounts();
+    renderCalendar();
+  }
+  if (n === 3) {
+    if (state.picked.length < state.sessions) {
+      if (!confirm(`${state.picked.length}개만 선택했습니다. 나머지는 원장님과 상담 후 확정할까요?`)) return;
+    }
+  }
+  if (n === 4) {
+    if (!validateForm()) return;
+    renderConfirm();
+  }
+
+  state.step = n;
+  [1,2,3,4,5].forEach(i => document.getElementById('s'+i).classList.toggle('hidden', i !== n));
+  updateStepUI(n);
+  window.scrollTo(0, 0);
+}
+
+function updateStepUI(n) {
+  [1,2,3,4].forEach(i => {
+    const el = document.getElementById('step'+i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+
+    const line = document.getElementById('line'+i+(i+1));
+    if (line) line.classList.toggle('done', i < n);
+  });
+}
+
+// ── 교시별 신청 인원 서버에서 로드 ────────────────────
+function loadSlotCounts() {
+  fetch(`${GAS_URL}?action=getSlotCounts`)
+    .then(r => r.json())
+    .then(d => { if (d.success) { slotCounts = d.counts; renderCalendar(); } })
+    .catch(() => {}); // 실패해도 조용히 무시 (오프라인 대비)
+}
+
+// ── 캘린더 렌더링 ──────────────────────────────────────
+function renderCalendar() {
+  document.getElementById('calTitle').textContent =
+    `📅 수업 날짜를 선택하세요 — ${state.courseName} (${state.sessions}회차)`;
+
+  const wrap = document.getElementById('calWrapper');
+  wrap.innerHTML = '';
+
+  SCHEDULE.forEach(week => {
+    const wDiv = document.createElement('div');
+
+    const wLabel = document.createElement('div');
+    wLabel.className = 'cal-week-label';
+    wLabel.textContent = week.label;
+    wDiv.appendChild(wLabel);
+
+    ['p1','p2'].forEach(period => {
+      const hasAny = week.days.some(d => d[period]);
+      if (!hasAny) return;
+
+      const row = document.createElement('div');
+      row.className = `cal-slot-row ${period === 'p1' ? 'row-p1' : 'row-p2'}`;
+      row.style.gridTemplateColumns = `72px repeat(${week.days.length}, 1fr)`;
+
+      const timeCol = document.createElement('div');
+      timeCol.className = 'cal-time-col';
+      timeCol.innerHTML = period === 'p1'
+        ? '1교시<br>10:00<br>~12:00'
+        : '2교시<br>13:00<br>~15:00';
+      row.appendChild(timeCol);
+
+      week.days.forEach(day => {
+        const col = document.createElement('div');
+        col.className = 'cal-day-col';
+
+        const head = document.createElement('div');
+        head.className = 'cal-day-head';
+        head.textContent = day.label;
+        col.appendChild(head);
+
+        const slotKey = day.key + '_' + period;
+        const btn = document.createElement('div');
+
+        if (!day[period]) {
+          btn.className = 'slot closed';
+          btn.innerHTML = '<span class="slot-time">—</span>';
+        } else {
+          const isPicked = state.picked.includes(slotKey);
+          const count    = slotCounts[slotKey] || 0;
+          const isFull   = count >= MAX_PER_SLOT && !isPicked;
+          const remain   = MAX_PER_SLOT - count;
+
+          let cls = 'slot';
+          if (isPicked)   cls += ' picked';
+          else if (isFull) cls += ' full';
+
+          const timeText  = period === 'p1' ? '10:00~12:00' : '13:00~15:00';
+          let countText;
+          if (isPicked)       countText = `✓ 선택됨 (${count}/${MAX_PER_SLOT})`;
+          else if (isFull)    countText = `마감 (${MAX_PER_SLOT}/${MAX_PER_SLOT})`;
+          else if (remain <= 2) countText = `잔여 ${remain}자리`;
+          else                countText = `${count}/${MAX_PER_SLOT}명`;
+
+          btn.className = cls;
+          btn.innerHTML = `<span class="slot-time">${timeText}</span><span class="slot-count">${countText}</span>`;
+          btn.dataset.key   = slotKey;
+          btn.dataset.label = `${day.label} ${period==='p1'?'1교시(10~12시)':'2교시(13~15시)'}`;
+
+          if (!isFull) {
+            btn.onclick = () => toggleSlot(slotKey, btn.dataset.label);
+          }
+        }
+
+        col.appendChild(btn);
+        row.appendChild(col);
+      });
+
+      wDiv.appendChild(row);
+    });
+
+    wrap.appendChild(wDiv);
+  });
+
+  updatePickedUI();
+}
+
+function toggleSlot(key, label) {
+  const count  = slotCounts[key] || 0;
+  const idx    = state.picked.indexOf(key);
+
+  if (idx >= 0) {
+    state.picked.splice(idx, 1);
+  } else {
+    if (count >= MAX_PER_SLOT) {
+      alert('해당 교시는 정원이 마감되었습니다.');
+      return;
+    }
+    if (state.picked.length >= state.sessions) {
+      alert(`최대 ${state.sessions}개까지 선택할 수 있어요.`);
+      return;
+    }
+    state.picked.push(key);
+  }
+  renderCalendar();
+}
+
+function updatePickedUI() {
+  const n = state.sessions;
+  const cnt = state.picked.length;
+
+  document.getElementById('progressText').textContent = `${cnt}개 선택됨`;
+  document.getElementById('progressGoal').textContent = `목표: ${n}개`;
+  document.getElementById('progressFill').style.width = Math.min(100, Math.round(cnt/n*100)) + '%';
+
+  const chips = document.getElementById('pickedChips');
+  if (cnt === 0) {
+    chips.innerHTML = '<span class="chip-empty">날짜를 클릭해서 선택하세요</span>';
+  } else {
+    chips.innerHTML = state.picked.map(k => {
+      const lbl = slotKeyToLabel(k);
+      return `<span class="chip" onclick="removeSlot('${k}')">${lbl} <span class="rm">✕</span></span>`;
+    }).join('');
+  }
+
+  const btn = document.getElementById('btnNext2');
+  btn.textContent = cnt >= n
+    ? '학생 정보 입력 →'
+    : `다음 → (${cnt}/${n}개 선택)`;
+}
+
+function removeSlot(key) {
+  state.picked = state.picked.filter(k => k !== key);
+  renderCalendar();
+}
+
+function slotKeyToLabel(key) {
+  const [dateKey, period] = key.split('_');
+  const tLabel = period === 'p1' ? '1교시(10~12시)' : '2교시(13~15시)';
+  for (const week of SCHEDULE) {
+    for (const day of week.days) {
+      if (day.key === dateKey) return `${day.label} ${tLabel}`;
+    }
+  }
+  return key;
+}
+
+// ── 전화번호 자동 하이픈 ────────────────────────────────
+['fPhone','fStudentPhone','receipt-num'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    let v = el.value.replace(/\D/g, '');
+    if (v.length <= 3)       el.value = v;
+    else if (v.length <= 7)  el.value = v.slice(0,3) + '-' + v.slice(3);
+    else                     el.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7,11);
+  });
+});
+
+// ── 결제 방식 토글 ──────────────────────────────────────
+document.querySelectorAll('input[name="payment"]').forEach(r => {
+  r.addEventListener('change', () => {
+    document.getElementById('transfer-detail').classList.toggle('visible', r.value === '계좌이체' && r.checked);
+    document.getElementById('card-detail').classList.toggle('visible', r.value === '비대면 카드결제' && r.checked);
+  });
+});
+
+// ── 계좌번호 복사 ────────────────────────────────────────
+function copyAccount() {
+  const num = document.getElementById('account-num').textContent;
+  navigator.clipboard.writeText(num).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = '복사됨 ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = num; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  });
+}
+
+// ── 생년월일 자동 점 포맷 ───────────────────────────────
+const birthEl = document.getElementById('fBirth');
+if (birthEl) {
+  birthEl.addEventListener('input', () => {
+    let v = birthEl.value.replace(/\D/g, '');
+    if (v.length <= 4)       birthEl.value = v;
+    else if (v.length <= 6)  birthEl.value = v.slice(0,4) + '.' + v.slice(4);
+    else                     birthEl.value = v.slice(0,4) + '.' + v.slice(4,6) + '.' + v.slice(6,8);
+  });
+  birthEl.addEventListener('blur', () => {
+    const digits = birthEl.value.replace(/\D/g, '');
+    const invalid = digits.length > 0 && digits.length < 8;
+    birthEl.classList.toggle('error', invalid);
+    const err = document.getElementById('errBirth');
+    if (err) err.classList.toggle('visible', invalid);
+  });
+}
+
+// ── 폼 검증 ────────────────────────────────────────────
+function validateForm() {
+  let ok = true;
+  const checks = [
+    { id: 'fName',   errId: 'errName',   test: v => v.trim().length > 0 },
+    { id: 'fBirth',  errId: 'errBirth',  test: v => /^\d{4}\.\d{2}\.\d{2}$/.test(v) },
+    { id: 'fSchool', errId: 'errSchool', test: v => v.trim().length > 0 },
+    { id: 'fGrade',  errId: 'errGrade',  test: v => v !== '' },
+    { id: 'fPhone',  errId: 'errPhone',  test: v => /^0\d{1,2}-\d{3,4}-\d{4}$/.test(v) },
+  ];
+  checks.forEach(({ id, errId, test }) => {
+    const el  = document.getElementById(id);
+    const err = document.getElementById(errId);
+    const fail = !test(el ? el.value : '');
+    if (el)  el.classList.toggle('error', fail);
+    if (err) { err.style.display = fail ? 'block' : 'none'; err.classList.toggle('visible', fail); }
+    if (fail) ok = false;
+  });
+
+  // 결제 방법 체크
+  const paySelected = !!document.querySelector('input[name="payment"]:checked');
+  const errPayment = document.getElementById('errPayment');
+  if (errPayment) { errPayment.style.display = paySelected ? 'none' : 'block'; }
+  if (!paySelected) ok = false;
+
+  // 안내사항 동의 체크
+  const agreed = document.getElementById('agree')?.checked;
+  const errAgree = document.getElementById('errAgree');
+  if (errAgree) { errAgree.style.display = agreed ? 'none' : 'block'; }
+  if (!agreed) ok = false;
+
+  return ok;
+}
+
+// ── 확인 화면 ──────────────────────────────────────────
+function renderConfirm() {
+  const schChips = state.picked.length
+    ? state.picked.map(k => `<span class="sch-chip">${slotKeyToLabel(k)}</span>`).join('')
+    : '<span style="color:var(--muted);font-size:13px">원장님 상담 후 확정</span>';
+
+  document.getElementById('confirmTable').innerHTML = `
+    <tr><td>과정</td><td><strong>${state.courseName}</strong></td></tr>
+    <tr><td>총 회차</td><td>${state.sessions}회 · 회당 초 4학년 이상은 120분 수업 / 초 1~3학년은 80분 수업</td></tr>
+    <tr><td>선택 수업일</td><td><div class="schedule-chips">${schChips}</div></td></tr>
+    <tr><td>학생 이름</td><td>${v('fName')}</td></tr>
+    <tr><td>생년월일</td><td>${v('fBirth')}</td></tr>
+    <tr><td>학교 / 학년</td><td>${v('fSchool')} · ${v('fGrade')}</td></tr>
+    <tr><td>보호자 연락처</td><td>${v('fPhone')}</td></tr>
+    ${v('fStudentPhone') && v('fStudentPhone') !== '—' ? `<tr><td>학생 연락처</td><td>${v('fStudentPhone')}</td></tr>` : ''}
+    <tr><td>결제 방법</td><td>${(() => { const el = document.querySelector('input[name="payment"]:checked'); return el ? el.value : '—'; })()}</td></tr>
+    ${v('fNote') && v('fNote') !== '—' ? `<tr><td>특이사항</td><td>${v('fNote')}</td></tr>` : ''}
+  `;
+}
+
+function v(id) {
+  const el = document.getElementById(id);
+  return (el ? el.value.trim() : '') || '—';
+}
+
+// ── 제출 ───────────────────────────────────────────────
+function submitForm() {
+  const btn = document.getElementById('btnSubmit');
+  btn.textContent = '제출 중...';
+  btn.disabled = true;
+
+  const paymentEl = document.querySelector('input[name="payment"]:checked');
+  const paymentVal = paymentEl ? paymentEl.value : '';
+
+  const params = new URLSearchParams({
+    action:        'submit',
+    studentName:   v('fName'),
+    birth:         v('fBirth'),
+    school:        v('fSchool'),
+    grade:         v('fGrade'),
+    phone:         v('fPhone'),
+    studentPhone:  v('fStudentPhone'),
+    courseName:    state.courseName,
+    sessions:      state.sessions,
+    schedule:      state.picked.map(k => slotKeyToLabel(k)).join(', '),
+    payment:       paymentVal,
+    receiptNum:    paymentVal === '계좌이체' ? v('receipt-num') : '',
+    note:          v('fNote')
+  });
+
+  fetch(GAS_URL + '?' + params)
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('appNoDisplay').textContent = data.appNo;
+        document.getElementById('successDetail').innerHTML =
+          `<strong>${v('fName')}</strong>님의 [${state.courseName}] 수강 신청이 접수되었습니다.<br>
+           선택하신 일정과 안내사항은 보호자 연락처(<strong>${v('fPhone')}</strong>)로 연락드릴게요.`;
+        go(5);
+      } else {
+        alert('오류가 발생했습니다: ' + data.message);
+        btn.textContent = '신청 완료';
+        btn.disabled = false;
+      }
+    })
+    .catch(() => {
+      alert('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      btn.textContent = '신청 완료';
+      btn.disabled = false;
+    });
+}
+
+function resetForm() {
+  state = { step: 1, courseId: null, courseName: '', sessions: 0, picked: [] };
+  document.querySelectorAll('.course-item').forEach(c => c.classList.remove('selected'));
+  ['fName','fBirth','fSchool','fGrade','fPhone','fStudentPhone','fNote','receipt-num'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = '';
+    el.classList.remove('error');
+  });
+  document.querySelectorAll('input[name="payment"]').forEach(r => r.checked = false);
+  const agreeEl = document.getElementById('agree');
+  if (agreeEl) agreeEl.checked = false;
+  document.getElementById('transfer-detail').classList.remove('visible');
+  document.getElementById('card-detail').classList.remove('visible');
+  document.querySelectorAll('.field-error').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.field-err').forEach(el => {
+    el.style.display = 'none'; el.classList.remove('visible');
+  });
+  go(1);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>추천 커리큘럼 — 랑이쌤컴퓨터교습소</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:           #f7f8fc;
+  --surface:      #ffffff;
+  --border:       #e4e6ef;
+  --text:         #1a1d2e;
+  --muted:        #6b7280;
+  --hint:         #9ca3af;
+  --accent:       #00009D;
+  --accent-dark:  #000070;
+  --accent-lt:    #E8E8FA;
+  --color-yellow: #FEC700;
+  --color-pink:   #C81653;
+  --color-green:  #7CAF11;
+  --radius:       10px;
+  --radius-lg:    14px;
+  --shadow:       0 1px 3px rgba(0,0,0,.07), 0 4px 12px rgba(0,0,0,.05);
+}
+
+body {
+  font-family: 'Pretendard Variable','Pretendard',-apple-system,sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; font-size: 16px; line-height: 1.6;
+}
+
+/* ── 헤더 ── */
+header {
+  background: var(--accent); border-bottom: none;
+  padding: 0 24px; height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-logo-wrap { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.header-logo-img {
+  height: 40px; width: 40px; object-fit: contain;
+  border-radius: 8px; background: #fff; padding: 2px;
+}
+.logo { font-size: 15px; font-weight: 700; color: #ffffff; }
+.logo span { color: rgba(255,255,255,.75); font-weight: 400; }
+.header-links { display: flex; gap: 16px; }
+.header-links a { font-size: 13px; color: rgba(255,255,255,.8); text-decoration: none; }
+.header-links a:hover { color: #ffffff; }
+
+/* ── 컨테이너 ── */
+.container { max-width: 860px; margin: 0 auto; padding: 36px 20px 80px; }
+
+/* ── 인트로 ── */
+.page-intro { text-align: center; margin-bottom: 40px; }
+.page-intro .badge {
+  display: inline-block; font-size: 12px; font-weight: 600;
+  color: var(--accent); background: var(--accent-lt);
+  padding: 4px 14px; border-radius: 20px; margin-bottom: 12px;
+}
+.page-intro h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; letter-spacing: -.3px; }
+.page-intro p  { font-size: 15px; color: var(--muted); line-height: 1.7; }
+
+/* ── 대상 탭 ── */
+.tab-wrap { display: flex; gap: 8px; justify-content: center; margin-bottom: 32px; }
+.tab-btn {
+  padding: 9px 24px; border-radius: 999px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--muted);
+  transition: all .15s; font-family: inherit;
+}
+.tab-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ── 트랙 섹션 ── */
+.track-section { display: none; }
+.track-section.visible { display: block; }
+
+.track-intro {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 22px;
+  margin-bottom: 28px; font-size: 14px; color: var(--muted); line-height: 1.7;
+}
+.track-intro strong { color: var(--text); font-weight: 600; }
+
+/* ── 트랙 카드 ── */
+.track { margin-bottom: 40px; }
+.track-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+}
+.track-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.track-name { font-size: 18px; font-weight: 700; }
+.track-desc { font-size: 13px; color: var(--muted); margin-left: auto; }
+
+/* ── 단계 플로우 ── */
+.flow {
+  display: flex; flex-direction: column; gap: 0;
+  position: relative;
+}
+.flow-line {
+  width: 2px; height: 28px;
+  background: var(--border);
+  margin-left: 23px;
+}
+.flow-line.colored { background: linear-gradient(to bottom, var(--lc, #e4e6ef), var(--border)); }
+
+.step-card {
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  transition: border-color .15s;
+  position: relative;
+}
+.step-card:hover { border-color: #b0b8e8; }
+.step-card.highlight { border-color: var(--hc, #b0b8e8); }
+
+.step-num-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.step-num {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700;
+  flex-shrink: 0;
+}
+.step-order {
+  font-size: 10px; font-weight: 600; letter-spacing: .04em;
+  color: var(--muted); white-space: nowrap;
+}
+
+.step-body { min-width: 0; }
+.step-top { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 5px; flex-wrap: wrap; }
+.step-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.step-badge {
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+  margin-top: 2px;
+}
+.step-sub  { font-size: 13px; color: var(--muted); margin-bottom: 6px; line-height: 1.5; }
+.step-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+.step-pill {
+  font-size: 12px; padding: 3px 9px; border-radius: 20px;
+  border: 1px solid var(--border); color: var(--muted); background: var(--bg);
+}
+
+/* 정규과정 연결 카드 */
+.regular-connect {
+  background: var(--accent-lt);
+  border: 1.5px dashed var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px; margin-top: 0;
+  display: grid; grid-template-columns: 46px 1fr; gap: 14px;
+}
+.connect-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.connect-body {}
+.connect-title { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.connect-course {
+  font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px;
+}
+.connect-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.connect-more {
+  margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid rgba(0,0,157,.2);
+  font-size: 13px; color: var(--accent-dark); line-height: 1.6;
+}
+.connect-more strong { font-weight: 600; }
+
+/* ── 색상 테마 ── */
+/* 트랙1 로고 파랑 */
+.t1 .track-dot { background: var(--accent); }
+.t1 .track-name { color: var(--accent); }
+.t1 .step-num { background: var(--accent-lt); color: var(--accent); }
+.t1 .step-badge { background: var(--accent-lt); color: var(--accent); }
+.t1 .flow-line { background: #a0a0e0; }
+
+/* 트랙2 초록 */
+.t2 .track-dot { background: #22c55e; }
+.t2 .track-name { color: #15803d; }
+.t2 .step-num { background: #dcfce7; color: #15803d; }
+.t2 .step-badge { background: #dcfce7; color: #15803d; }
+.t2 .flow-line { background: #a7e0c8; }
+
+/* 트랙3 보라 */
+.t3 .track-dot { background: #7c3aed; }
+.t3 .track-name { color: #6d28d9; }
+.t3 .step-num { background: #ede9fe; color: #6d28d9; }
+.t3 .step-badge { background: #ede9fe; color: #6d28d9; }
+.t3 .flow-line { background: #c4b5fd; }
+
+/* 트랙4 주황 */
+.t4 .track-dot { background: #f59e0b; }
+.t4 .track-name { color: #b45309; }
+.t4 .step-num { background: #fef3c7; color: #b45309; }
+.t4 .step-badge { background: #fef3c7; color: #b45309; }
+.t4 .flow-line { background: #fcd34d; }
+
+/* ── 전체 로드맵 요약 ── */
+.roadmap-summary {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 24px;
+  margin-bottom: 36px;
+}
+.roadmap-summary h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.roadmap-row {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; margin-bottom: 10px;
+}
+.roadmap-row:last-child { margin-bottom: 0; }
+.rm-label {
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  width: 80px; flex-shrink: 0;
+}
+.rm-chip {
+  font-size: 12px; font-weight: 500;
+  padding: 4px 11px; border-radius: 20px;
+  border: 1px solid var(--border);
+}
+.rm-arrow { color: var(--hint); font-size: 14px; }
+.rm-chip.bl { background: #eef0fc; color: #3d4fb5; border-color: #c7cffa; }
+.rm-chip.gn { background: #dcfce7; color: #15803d; border-color: #a7e0c8; }
+.rm-chip.pu { background: #ede9fe; color: #6d28d9; border-color: #c4b5fd; }
+.rm-chip.am { background: #fef3c7; color: #b45309; border-color: #fcd34d; }
+.rm-chip.gr { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+
+/* ── 유틸 ── */
+.hidden { display: none !important; }
+@media(max-width: 540px) {
+  .step-card { grid-template-columns: 38px 1fr; gap: 10px; padding: 13px 14px; }
+  .regular-connect { grid-template-columns: 38px 1fr; }
+  .track-desc { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="header-logo-wrap">
+    <img src="logo.png" alt="랑이쌤컴퓨터교습소 로고" class="header-logo-img" onerror="this.style.display='none'">
+    <div class="logo">랑이쌤컴퓨터 <span>추천 커리큘럼</span></div>
+  </a>
+    <div class="header-links">
+    <a href="index.html">📋 방학특강 신청하러 가기</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="page-intro">
+    <div class="badge">2026 여름방학 특강</div>
+    <h1>어떤 순서로 들으면 좋을까요?</h1>
+    <p>목표에 맞는 추천 순서를 확인하고<br>방학 특강 수료 후 이어지는 정규 과정까지 미리 계획해보세요.</p>
+  </div>
+
+  <!-- 대상 탭 -->
+  <div class="tab-wrap">
+    <button class="tab-btn active" onclick="switchTab('parent', this)">👨‍👩‍👧 학부모</button>
+    <button class="tab-btn" onclick="switchTab('student', this)">🧑‍💻 학생 본인</button>
+  </div>
+
+  <!-- ===== 학부모 탭 ===== -->
+  <div class="track-section visible" id="tab-parent">
+
+    <div class="track-intro">
+      <strong>자녀에게 맞는 경로를 찾아보세요.</strong><br>
+      컴퓨터를 처음 접하는 학생이라면 디지털 리터러시부터, 수행평가가 급한 학생이라면 바로 해당 과정으로 시작해도 됩니다.
+      각 트랙의 마지막에는 <strong>방학 후 정규 과정 연결</strong>도 안내해드려요.
+    </div>
+
+    <!-- 트랙 1: 컴퓨터 처음인 학생 -->
+    <div class="track t1">
+      <div class="track-header">
+        <div class="track-dot"></div>
+        <div class="track-name">🖥 컴퓨터가 처음인 학생</div>
+        <div class="track-desc">기초부터 차근차근 쌓는 경로</div>
+      </div>
+      <div class="flow">
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">1</div>
+            <div class="step-order">FIRST</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🧭 디지털 리터러시 과정</span>
+              <span class="step-badge">4회차 · 필수</span>
+            </div>
+            <div class="step-sub">파일 관리·인터넷·클라우드·AI 기초 — 모든 과정의 토대</div>
+            <div class="step-pills">
+              <span class="step-pill">파일 저장·정리</span>
+              <span class="step-pill">정보 검색</span>
+              <span class="step-pill">과제 제출 방법</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">2</div>
+            <div class="step-order">NEXT</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">📊 파워포인트 과정</span>
+              <span class="step-badge">6회차 · 추천</span>
+            </div>
+            <div class="step-sub">발표 기획부터 편집 디자인까지 — 가장 수행평가와 직결되는 과정</div>
+            <div class="step-pills">
+              <span class="step-pill">프리젠테이션 제작</span>
+              <span class="step-pill">이미지편집</span>
+              <span class="step-pill">포스터, 인포그래픽 제작</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">3</div>
+            <div class="step-order">PLUS</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">📝 한글 보고서 과정 또는 🎬 동영상 편집 과정</span>
+              <span class="step-badge">6회차 · 선택</span>
+            </div>
+            <div class="step-sub">수행평가 유형에 따라 선택 — 보고서 제출이면 한글 과정, 영상 제출이면 동영상 과정</div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="regular-connect">
+          <div class="connect-icon">→</div>
+          <div class="connect-body">
+            <div class="connect-title">방학 후 정규 과정 연결</div>
+            <div class="connect-course">💻 융합 활용 정규 과정</div>
+            <div class="connect-desc">방학 특강에서 익힌 PPT·한글·파일 관리 실력을 바탕으로, 정규반에서는 각 과정에서 좀 더 많은 기능들과 활용 기술로  확장할 수 있어요.</div>
+            <div class="connect-more"><strong>여기서 더 배우면 좋은 것:</strong> 엑셀 함수·데이터 정리, 한글 고급 편집, 파워포인트 활용 기술</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 트랙 2: 코딩에 관심 있는 학생 -->
+    <div class="track t2">
+      <div class="track-header">
+        <div class="track-dot"></div>
+        <div class="track-name">🤖 코딩·AI에 관심 있는 학생</div>
+        <div class="track-desc">논리적 사고와 창작 능력을 키우는 경로</div>
+      </div>
+      <div class="flow">
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">1</div>
+            <div class="step-order">FIRST</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🟢 엔트리 블록코딩 과정</span>
+              <span class="step-badge">6회차 · 입문</span>
+            </div>
+            <div class="step-sub">코딩 개념을 블록으로 쉽게 — 처음 코딩을 접하는 학생의 시작점</div>
+            <div class="step-pills">
+              <span class="step-pill">순서·반복·조건</span>
+              <span class="step-pill">변수·신호</span>
+              <span class="step-pill">미니 게임 제작</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">2</div>
+            <div class="step-order">NEXT</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🐍 파이썬 기초문법 과정</span>
+              <span class="step-badge">8회차 · 핵심</span>
+            </div>
+            <div class="step-sub">블록코딩에서 텍스트 코딩으로 — 고등학교 정보 과목과 직결되는 과정</div>
+            <div class="step-pills">
+              <span class="step-pill">변수·조건·반복</span>
+              <span class="step-pill">함수·모듈</span>
+              <span class="step-pill">미니 프로젝트</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">3</div>
+            <div class="step-order">PLUS</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🤖 AI 활용 과정</span>
+              <span class="step-badge">4회차 · 추천</span>
+            </div>
+            <div class="step-sub">파이썬 기초 후 AI와 결합 — AI로 나만의 공부 도구·웹앱 제작까지</div>
+            <div class="step-pills">
+              <span class="step-pill">프롬프트 설계</span>
+              <span class="step-pill">AI 도구 활용</span>
+              <span class="step-pill">웹앱 제작</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="regular-connect">
+          <div class="connect-icon">→</div>
+          <div class="connect-body">
+            <div class="connect-title">방학 후 정규 과정 연결</div>
+            <div class="connect-course">🐍 파이썬 정규 과정 / 🤖 AI 코딩 심화 과정</div>
+            <div class="connect-desc">기초문법 과정에서 익힌 파이썬 기초를 바탕으로, 정규반에서는 자료구조·알고리즘·프로젝트 개발까지 단계적으로 심화할 수 있어요.</div>
+            <div class="connect-more"><strong>여기서 더 배우면 좋은 것:</strong> 리스트·딕셔너리 심화, 파일 입출력, 데이터 시각화(matplotlib), 간단한 웹 크롤링</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 트랙 3: 수행평가가 급한 학생 -->
+    <div class="track t3">
+      <div class="track-header">
+        <div class="track-dot"></div>
+        <div class="track-name">📋 수행평가가 급한 학생</div>
+        <div class="track-desc">목적에 맞는 과정만 빠르게</div>
+      </div>
+      <div class="flow">
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">✓</div>
+            <div class="step-order">PICK</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">수행평가 유형에 따라 바로 선택</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+              <div style="padding:10px 12px;border-radius:8px;border:1px solid #c7cffa;background:#eef0fc;font-size:13px;">
+                <strong style="color:#3d4fb5">📊 발표 PPT 제출</strong> → <span style="color:#3d4fb5">파워포인트 과정</span>
+              </div>
+              <div style="padding:10px 12px;border-radius:8px;border:1px solid #c4b5fd;background:#ede9fe;font-size:13px;">
+                <strong style="color:#6d28d9">🎬 영상 파일 제출</strong> → <span style="color:#6d28d9">동영상 편집 과정(PPT 활용)</span>
+              </div>
+              <div style="padding:10px 12px;border-radius:8px;border:1px solid #a7e0c8;background:#dcfce7;font-size:13px;">
+                <strong style="color:#15803d">📝 보고서 문서 제출</strong> → <span style="color:#15803d">한글 보고서 과정</span>
+              </div>
+              <div style="padding:10px 12px;border-radius:8px;border:1px solid #fcd34d;background:#fef3c7;font-size:13px;">
+                <strong style="color:#b45309">🖥 코딩 과제</strong> → <span style="color:#b45309">엔트리 블록코딩 과정 또는 파이썬 기초문법과정</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">+</div>
+            <div class="step-order">ADD</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🧭 디지털 리터러시 과정</span>
+              <span class="step-badge">컴퓨터 낯설면 먼저 수강</span>
+            </div>
+            <div class="step-sub">파일 저장·제출 방법을 모르면 결과물을 만들어도 제출을 못할 수 있어요.<br>컴퓨터가 처음이라면 위 과정 전에 먼저 수강을 권장합니다.</div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="regular-connect">
+          <div class="connect-icon">→</div>
+          <div class="connect-body">
+            <div class="connect-title">방학 후 정규 과정 연결</div>
+            <div class="connect-course">💻 융합 활용 정규 과정</div>
+            <div class="connect-desc">수행평가 하나를 위해 배웠다면, 정규반에서 같은 도구를 더 깊이 익혀 모든 과목 수행평가에 활용할 수 있어요.</div>
+            <div class="connect-more"><strong>여기서 더 배우면 좋은 것:</strong> 수행평가 유형별 완성도 높이기, 포트폴리오 정리</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /학부모 탭 -->
+
+
+  <!-- ===== 학생 탭 ===== -->
+  <div class="track-section hidden" id="tab-student">
+
+    <div class="track-intro">
+      <strong>내가 뭘 배우고 싶은지 골라봐요!</strong><br>
+      지금 당장 수행평가가 급하거나, 코딩이 궁금하거나, AI를 잘 쓰고 싶다거나 — 목표에 맞는 순서를 찾아드릴게요.
+    </div>
+
+    <!-- 학생 트랙 1 -->
+    <div class="track t1">
+      <div class="track-header">
+        <div class="track-dot"></div>
+        <div class="track-name">📝 수행평가 걱정 없애기</div>
+        <div class="track-desc">제출물 완성에 집중하는 경로</div>
+      </div>
+      <div class="flow">
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">1</div>
+            <div class="step-order">START</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🧭 디지털 리터러시 과정</span>
+              <span class="step-badge">4회차</span>
+            </div>
+            <div class="step-sub">파일 저장, 인터넷 검색, 과제 제출 방법 — 기초가 없으면 여기서 시작!</div>
+            <div class="step-pills"><span class="step-pill">파일 관리</span><span class="step-pill">정보 검색</span><span class="step-pill">AI 기초</span></div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">2</div>
+            <div class="step-order">PICK 1</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">내 수행평가 유형에 맞는 반 선택</span>
+              <span class="step-badge">6회차</span>
+            </div>
+            <div class="step-sub">
+              PPT 발표 → <strong>파워포인트 발표과정</strong><br>
+              영상 제출 → <strong>동영상 편집 과정</strong><br>
+              보고서 제출 → <strong>한글 보고서 과정</strong>
+            </div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">3</div>
+            <div class="step-order">BONUS</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🤖 AI 활용 과정</span>
+              <span class="step-badge">4회차 · 보너스</span>
+            </div>
+            <div class="step-sub">AI로 공부 자료도 만들고, 나만의 공부 도구도 만들어봐요 — 수행평가 준비에도 AI가 도움이 돼요!</div>
+            <div class="step-pills"><span class="step-pill">프롬프트 설계</span><span class="step-pill">AI 공부 자료</span><span class="step-pill">웹앱 제작</span></div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="regular-connect">
+          <div class="connect-icon">🚀</div>
+          <div class="connect-body">
+            <div class="connect-title">방학 끝나고 이어서 배울 수 있어요!</div>
+            <div class="connect-course">💻 융합 활용 정규 과정</div>
+            <div class="connect-desc">방학에 배운 PPT·한글 실력을 더 키우고 싶다면 정규반으로 이어가요. 엑셀·문서 자동화까지 배울 수 있어요.</div>
+            <div class="connect-more"><strong>더 배우면 좋은 것:</strong> 엑셀 기초, 포트폴리오 만들기</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 학생 트랙 2 -->
+    <div class="track t2">
+      <div class="track-header">
+        <div class="track-dot"></div>
+        <div class="track-name">👾 코딩 배우고 싶어요</div>
+        <div class="track-desc">코딩 실력을 처음부터 쌓는 경로</div>
+      </div>
+      <div class="flow">
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">1</div>
+            <div class="step-order">START</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🟢 엔트리 블록코딩 과정</span>
+              <span class="step-badge">6회차 · 코딩 첫 시작</span>
+            </div>
+            <div class="step-sub">코딩이 뭔지 모르면 여기서 시작! 블록을 조립하면서 게임도 만들어요.</div>
+            <div class="step-pills"><span class="step-pill">순서·반복·조건</span><span class="step-pill">변수</span><span class="step-pill">게임 제작</span></div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">2</div>
+            <div class="step-order">NEXT</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🐍 파이썬 기초문법 과정</span>
+              <span class="step-badge">8회차 · 진짜 코딩</span>
+            </div>
+            <div class="step-sub">블록 말고 직접 코드를 타이핑! 학교 정보 시간에 배우는 파이썬을 먼저 배워봐요.</div>
+            <div class="step-pills"><span class="step-pill">변수·조건·반복</span><span class="step-pill">함수</span><span class="step-pill">미니 게임</span></div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">3</div>
+            <div class="step-order">BONUS</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🤖 AI 활용 실전 과정</span>
+              <span class="step-badge">4회차 · 추천</span>
+            </div>
+            <div class="step-sub">파이썬 배운 후 AI랑 같이 써보면 더 재미있어요 — AI한테 코딩도 물어보고 나만의 앱도 만들어봐요!</div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="regular-connect">
+          <div class="connect-icon">🚀</div>
+          <div class="connect-body">
+            <div class="connect-title">방학 끝나고 이어서 배울 수 있어요!</div>
+            <div class="connect-course">🐍 파이썬 정규 과정</div>
+            <div class="connect-desc">기초 문법에서 끝내기 아깝죠? 정규반에서 더 어려운 문제도 풀고 실제 프로그램도 만들 수 있어요!</div>
+            <div class="connect-more"><strong>더 배우면 좋은 것:</strong> 리스트·딕셔너리 심화, 파일 다루기, 그래프 그리기, 나만의 프로그램 완성</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 학생 트랙 3 -->
+    <div class="track t4">
+      <div class="track-header">
+        <div class="track-dot"></div>
+        <div class="track-name">🤖 AI 잘 쓰고 싶어요</div>
+        <div class="track-desc">AI를 도구로 활용하는 경로</div>
+      </div>
+      <div class="flow">
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">1</div>
+            <div class="step-order">START</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🤖 AI 활용 과정</span>
+              <span class="step-badge">4회차 · 핵심</span>
+            </div>
+            <div class="step-sub">ChatGPT·Claude 제대로 쓰는 법부터 나만의 단어장·스케줄러 앱 만들기까지!</div>
+            <div class="step-pills"><span class="step-pill">프롬프트 설계</span><span class="step-pill">AI 공부 활용</span><span class="step-pill">웹앱 제작</span></div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="step-card">
+          <div class="step-num-wrap">
+            <div class="step-num">2</div>
+            <div class="step-order">NEXT</div>
+          </div>
+          <div class="step-body">
+            <div class="step-top">
+              <span class="step-name">🐍 파이썬 기초문법 과정</span>
+              <span class="step-badge">8회차 · 추천</span>
+            </div>
+            <div class="step-sub">AI와 대화하면서 코딩을 배우면 훨씬 빨리 늘어요 — AI 활용반 이후에 파이썬이 딱 맞아요!</div>
+            <div class="step-pills"><span class="step-pill">기초 문법</span><span class="step-pill">미니 프로젝트</span></div>
+          </div>
+        </div>
+        <div class="flow-line"></div>
+
+        <div class="regular-connect">
+          <div class="connect-icon">🚀</div>
+          <div class="connect-body">
+            <div class="connect-title">방학 끝나고 이어서 배울 수 있어요!</div>
+            <div class="connect-course">🤖 AI 코딩 심화 과정 / 🐍 파이썬 정규 과정</div>
+            <div class="connect-desc">AI로 아이디어를 내고 파이썬으로 직접 만드는 조합 — 지금 가장 핫한 능력이에요!</div>
+            <div class="connect-more"><strong>더 배우면 좋은 것:</strong> AI API 연동, 간단한 챗봇 만들기, 데이터 분석 기초</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /학생 탭 -->
+
+  <!-- 전체 요약 -->
+  <div class="roadmap-summary">
+    <h3>📌 전체 과정 한눈에 보기</h3>
+    <div class="roadmap-row">
+      <span class="rm-label">기초 공통</span>
+      <span class="rm-chip gr">🧭 디지털 리터러시</span>
+      <span class="rm-arrow">→</span>
+      <span style="font-size:13px;color:var(--muted)">모든 과정의 선수 권장</span>
+    </div>
+    <div class="roadmap-row">
+      <span class="rm-label">수행평가</span>
+      <span class="rm-chip bl">📊 PPT 발표자료</span>
+      <span class="rm-arrow">/</span>
+      <span class="rm-chip pu">🎬 동영상 편집</span>
+      <span class="rm-arrow">/</span>
+      <span class="rm-chip gn">📝 한글 보고서</span>
+    </div>
+    <div class="roadmap-row">
+      <span class="rm-label">코딩</span>
+      <span class="rm-chip gn">🟢 엔트리</span>
+      <span class="rm-arrow">→</span>
+      <span class="rm-chip gn">🐍 파이썬 기초 과정</span>
+      <span class="rm-arrow">→</span>
+      <span class="rm-chip gn">🐍 파이썬 정규 과정</span>
+    </div>
+    <div class="roadmap-row">
+      <span class="rm-label">AI 활용</span>
+      <span class="rm-chip am">🤖 AI 활용 과정</span>
+      <span class="rm-arrow">→</span>
+      <span class="rm-chip am">🤖 AI 심화 정규 과정</span>
+    </div>
+  </div>
+
+  <div style="text-align:center">
+    <a href="index.html" style="display:inline-block;padding:13px 32px;background:var(--accent);color:#fff;border-radius:var(--radius-lg);font-size:16px;font-weight:700;text-decoration:none;letter-spacing:-.2px;">
+      수강 신청하러 가기 →
+    </a>
+  </div>
+
+</div>
+
+<script>
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.track-section').forEach(s => {
+    s.classList.remove('visible');
+    s.classList.add('hidden');
+  });
+  if (el) el.classList.add('active');
+  const target = document.getElementById('tab-' + tab);
+  if (target) {
+    target.classList.remove('hidden');
+    target.classList.add('visible');
+  }
+}
+</script>
+</body>
+</html>
