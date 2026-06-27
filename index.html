@@ -460,7 +460,34 @@
   .intro-card ul { padding-left: 18px; margin-bottom: 8px; }
   .intro-card p  { font-weight: 600; margin-top: 8px; margin-bottom: 2px; }
   .intro-card a  { color: var(--accent); }
-
+/* 수업료 표 */
+  .fee-table {
+    width: 100%; border-collapse: collapse;
+    margin: 8px 0 4px; font-size: 14px;
+    border-radius: 8px; overflow: hidden;
+    border: 1px solid #b0b0e8;
+  }
+  .fee-table th {
+    background: var(--accent); color: #fff;
+    padding: 8px 10px; text-align: center;
+    font-size: 13px; font-weight: 600;
+  }
+  .fee-table td {
+    padding: 8px 10px; text-align: center;
+    border-bottom: 1px solid #c8c8f0;
+    border-right: 1px solid #c8c8f0;
+    background: rgba(255,255,255,.6);
+    font-size: 14px;
+  }
+  .fee-table td:last-child { border-right: none; }
+  .fee-table tr:last-child td { border-bottom: none; }
+  .fee-table .fee-val { font-weight: 700; color: var(--accent); }
+  .fee-table .fee-sub { font-size: 12px; color: var(--muted); font-weight: 400; }
+  @media(max-width: 500px) {
+    .intro-card { padding: 16px 14px; font-size: 14px; }
+    .fee-table th, .fee-table td { padding: 7px 6px; font-size: 12px; }
+    .fee-table .fee-val { font-size: 13px; }
+  }
   /* 라디오 카드 */
   .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
   .radio-card {
@@ -573,6 +600,50 @@
     <h1>수강 신청</h1>
     <p>원하는 과정과 수업 날짜를 <br>직접 선택하세요.</p>
   </div>
+<!-- 수업료 안내 -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title">💰 수업료 안내</div>
+    <table class="fee-table">
+      <thead>
+        <tr>
+          <th>과정</th>
+          <th>대상</th>
+          <th>수업시간</th>
+          <th>수업료</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2"><strong>4회차</strong><br><span class="fee-sub">디지털 리터러시<br>AI 활용 실전</span></td>
+          <td>초1 ~ 초3</td>
+          <td>80분</td>
+          <td class="fee-val">75,000원</td>
+        </tr>
+        <tr>
+          <td>초4 이상</td>
+          <td>120분</td>
+          <td class="fee-val">110,000원</td>
+        </tr>
+        <tr>
+          <td rowspan="2"><strong>6회차</strong><br><span class="fee-sub">PPT · 동영상<br>한글 · 엔트리</span></td>
+          <td>초1 ~ 초3</td>
+          <td>80분</td>
+          <td class="fee-val">112,500원</td>
+        </tr>
+        <tr>
+          <td>초4 이상</td>
+          <td>120분</td>
+          <td class="fee-val">165,000원</td>
+        </tr>
+        <tr>
+          <td><strong>8회차</strong><br><span class="fee-sub">파이썬 맛보기</span></td>
+          <td>초4 이상</td>
+          <td>120분</td>
+          <td class="fee-val">220,000원</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <!-- 진행 단계 -->
   <div class="steps" id="stepsEl">
@@ -600,7 +671,7 @@
   <!-- ===== STEP 1: 과정 선택 ===== -->
   <div id="s1">
     <div class="card">
-      <div class="card-title">📚 수강할 과정을 선택하세요</div>
+      <div class="card-title">📚 수강할 과정을 선택하세요.(수</div>
       <div class="course-grid" id="courseGrid">
         <div class="course-item" data-id="dl" data-name="디지털 리터러시 과정" data-sessions="4" onclick="selectCourse(this)">
           <div class="course-top"><span class="course-icon">🧭</span><span class="course-name">디지털 리터러시 과정</span><span class="course-badge">4회차</span></div>
