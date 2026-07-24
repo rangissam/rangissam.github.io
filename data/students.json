@@ -1,0 +1,22 @@
+{
+  "students": [
+    {
+      "student_id": "P001",
+      "name": "김민준",
+      "grade": "초등학교 5학년",
+      "enrolled_date": "2025-03-02",
+      "status": "재원",
+      "blog_url": "https://blog.naver.com/여기에_블로그_아이디",
+      "share_token": "k7m2xq9pLd"
+    },
+    {
+      "student_id": "P002",
+      "name": "이서연",
+      "grade": "초등학교 6학년",
+      "enrolled_date": "2025-05-14",
+      "status": "재원",
+      "blog_url": "",
+      "share_token": "9htRz3wQ2m"
+    }
+  ]
+}

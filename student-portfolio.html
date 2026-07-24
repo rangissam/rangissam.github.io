@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>랑이쌤컴퓨터교습소 | 학생 작품 게시판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cork:#c19863;
+    --cork-dark:#a87c4a;
+    --cork-shadow:#7c5a34;
+    --paper:#fffbf2;
+    --paper-shadow:#e8ddc6;
+    --ink:#3a2a1a;
+    --ink-soft:#6b5640;
+    --pin:#d6483a;
+    --tape:#f4e9c9;
+
+    --c-digital:#3e7ca6; --c-digital-bg:#e4eef5;
+    --c-office:#4f8f5b; --c-office-bg:#e6f1e7;
+    --c-video:#b85a93; --c-video-bg:#f6e6ef;
+    --c-ai:#2f9c8f; --c-ai-bg:#e2f3f0;
+    --c-block:#d9932e; --c-block-bg:#faf0dd;
+    --c-python:#6457a6; --c-python-bg:#ece9f6;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 0, transparent 40px),
+      radial-gradient(circle at 80% 60%, rgba(0,0,0,0.04) 0, transparent 50px),
+      var(--cork);
+    background-blend-mode:normal;
+    font-family:'Noto Sans KR', sans-serif;
+    color:var(--ink);
+    padding:0 0 60px;
+  }
+  /* subtle cork texture via layered radial dots */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+      radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:14px 14px, 18px 18px;
+    background-position:0 0, 7px 9px;
+    pointer-events:none;
+    z-index:0;
+  }
+  .wrap{max-width:1080px; margin:0 auto; padding:40px 24px 0; position:relative; z-index:1;}
+
+  /* ===== Header ===== */
+  header{text-align:center; margin-bottom:34px;}
+  .tape{
+    display:inline-block;
+    background:var(--tape);
+    color:var(--ink-soft);
+    font-size:13px;
+    padding:5px 22px;
+    transform:rotate(-2deg);
+    box-shadow:0 1px 2px rgba(0,0,0,0.15);
+    letter-spacing:0.05em;
+  }
+  h1{
+    font-family:'Jua', sans-serif;
+    font-weight:400;
+    font-size:40px;
+    color:var(--paper);
+    text-shadow:2px 2px 0 var(--cork-shadow);
+    margin:14px 0 6px;
+    letter-spacing:0.02em;
+  }
+  header p.sub{
+    font-family:'Gowun Batang', serif;
+    color:var(--paper);
+    opacity:0.92;
+    font-size:15px;
+    margin:0;
+  }
+
+  /* ===== Notice pinned note ===== */
+  .notice{
+    max-width:640px;
+    margin:28px auto 40px;
+    background:var(--paper);
+    border-radius:2px;
+    padding:18px 24px;
+    position:relative;
+    transform:rotate(-0.6deg);
+    box-shadow:0 6px 14px rgba(0,0,0,0.22);
+  }
+  .notice::before{
+    content:"";
+    position:absolute; top:-11px; left:50%; transform:translateX(-50%);
+    width:16px; height:16px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #ff8a7a, var(--pin) 70%);
+    box-shadow:0 3px 4px rgba(0,0,0,0.35);
+  }
+  .notice h2{
+    font-family:'Jua', sans-serif; font-weight:400;
+    font-size:17px; margin:0 0 6px; color:var(--ink);
+  }
+  .notice p{
+    margin:0; font-size:13.5px; line-height:1.7; color:var(--ink-soft);
+  }
+  .notice .meta{
+    margin-top:10px; font-size:12px; color:var(--ink-soft); opacity:0.75;
+  }
+
+  /* ===== Filter tabs ===== */
+  .filters{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px;
+    margin-bottom:34px;
+  }
+  .filter-btn{
+    font-family:'Noto Sans KR', sans-serif;
+    font-size:13px; font-weight:500;
+    padding:8px 16px;
+    border:none; border-radius:20px 20px 4px 4px;
+    background:var(--paper);
+    color:var(--ink-soft);
+    cursor:pointer;
+    box-shadow:0 2px 5px rgba(0,0,0,0.18);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .filter-btn:hover{ transform:translateY(-2px); }
+  .filter-btn.active{
+    background:var(--ink);
+    color:var(--paper);
+    box-shadow:0 3px 7px rgba(0,0,0,0.3);
+  }
+
+  /* ===== Board grid ===== */
+  .board{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+    gap:34px 22px;
+  }
+  .card{
+    background:var(--paper);
+    border-radius:3px;
+    padding:14px 14px 16px;
+    position:relative;
+    box-shadow:0 8px 16px rgba(0,0,0,0.25);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:nth-child(3n+1){ transform:rotate(-1.6deg); }
+  .card:nth-child(3n+2){ transform:rotate(1.2deg); }
+  .card:nth-child(3n+3){ transform:rotate(-0.6deg); }
+  .card:hover{ transform:rotate(0deg) translateY(-4px); box-shadow:0 12px 20px rgba(0,0,0,0.3); z-index:2;}
+  .card::before{
+    content:"";
+    position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+    width:15px; height:15px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, #ff8a7a, var(--pin) 70%);
+    box-shadow:0 3px 4px rgba(0,0,0,0.35);
+  }
+  .thumb{
+    width:100%; aspect-ratio:4/3;
+    border-radius:2px;
+    background:var(--paper-shadow);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink-soft); font-size:12px;
+    margin-bottom:10px;
+    overflow:hidden;
+    position:relative;
+  }
+  .new-badge{
+    position:absolute; top:8px; right:8px;
+    background:var(--pin); color:#fff;
+    font-family:'Jua', sans-serif; font-weight:400;
+    font-size:11px; padding:3px 9px; border-radius:3px;
+    transform:rotate(4deg);
+    box-shadow:0 2px 4px rgba(0,0,0,0.25);
+  }
+  .featured-badge{
+    position:absolute; top:8px; left:8px;
+    background:#e8a93e; color:#4a3308;
+    font-family:'Jua', sans-serif; font-weight:400;
+    font-size:11px; padding:3px 9px; border-radius:3px;
+    transform:rotate(-3deg);
+    box-shadow:0 2px 4px rgba(0,0,0,0.25);
+  }
+  .tag{
+    display:inline-block;
+    font-size:11px; font-weight:500;
+    padding:3px 10px; border-radius:11px;
+    margin-bottom:8px;
+  }
+  .card h3{
+    font-family:'Jua', sans-serif; font-weight:400;
+    font-size:16px; margin:0 0 4px; color:var(--ink);
+  }
+  .card .student{
+    font-size:12px; color:var(--ink-soft); margin:0 0 8px;
+  }
+  .card .desc{
+    font-size:12.5px; line-height:1.55; color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  .card .footer-row{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:11.5px; color:var(--ink-soft); opacity:0.8;
+    border-top:1px dashed var(--paper-shadow);
+    padding-top:8px;
+  }
+  .card a.view{
+    font-size:12px; font-weight:500;
+    color:var(--ink); text-decoration:none;
+    border-bottom:1px solid var(--ink);
+  }
+
+  .tag.digital{background:var(--c-digital-bg); color:var(--c-digital);}
+  .tag.office{background:var(--c-office-bg); color:var(--c-office);}
+  .tag.video{background:var(--c-video-bg); color:var(--c-video);}
+  .tag.ai{background:var(--c-ai-bg); color:var(--c-ai);}
+  .tag.block{background:var(--c-block-bg); color:var(--c-block);}
+  .tag.python{background:var(--c-python-bg); color:var(--c-python);}
+
+  footer{
+    text-align:center; margin-top:56px;
+    color:var(--paper); opacity:0.85; font-size:12.5px;
+  }
+  footer .tape{ margin-bottom:10px; }
+
+  @media (max-width:480px){
+    h1{font-size:30px;}
+    .board{grid-template-columns:repeat(auto-fill, minmax(160px,1fr));}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span class="tape">랑이쌤컴퓨터교습소</span>
+    <h1>학생 작품 게시판</h1>
+    <p class="sub">우리 아이들이 직접 만든 결과물을 소개합니다</p>
+  </header>
+
+  <div class="notice">
+    <h2>학부모님께 안내드립니다</h2>
+    <p>
+      이 게시판은 과정별로 선생님이 선정한 <strong>우수 작품</strong>만 모아 소개합니다.
+      자녀의 다른 작품들은 개인 포트폴리오 페이지에서 모두 확인하실 수 있습니다.
+      새로 선정된 작품에는 <strong>NEW</strong> 표시가 붙어 있습니다.
+    </p>
+    <p class="meta">최종 업데이트: 2026년 7월 24일 · 문의: 원장 랑이쌤</p>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">전체</button>
+    <button class="filter-btn" data-filter="digital">디지털 리터러시</button>
+    <button class="filter-btn" data-filter="office">오피스 활용</button>
+    <button class="filter-btn" data-filter="video">영상 편집</button>
+    <button class="filter-btn" data-filter="ai">AI 활용</button>
+    <button class="filter-btn" data-filter="block">블록 코딩</button>
+    <button class="filter-btn" data-filter="python">파이썬</button>
+  </div>
+
+  <div class="board" id="board">
+    <p class="loading-msg" style="grid-column:1/-1;text-align:center;color:var(--paper)">작품을 불러오는 중입니다...</p>
+  </div>
+
+  <footer>
+    <div class="tape">랑이쌤컴퓨터교습소</div>
+    <p>작품과 관련해 궁금하신 점은 학원으로 편하게 연락 주세요.</p>
+  </footer>
+
+</div>
+
+<script>
+  const NEW_DAYS = 7;
+
+  function isRecent(dateStr){
+    const d = new Date(dateStr.replace(/\./g, '-'));
+    const diffDays = (Date.now() - d.getTime()) / 86400000;
+    return diffDays <= NEW_DAYS;
+  }
+
+  async function loadBoard(){
+    const boardEl = document.getElementById('board');
+    let data;
+    try{
+      const res = await fetch('data/board.json');
+      if(!res.ok) throw new Error('not found');
+      data = await res.json();
+    }catch(e){
+      boardEl.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--paper)">작품을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>';
+      return;
+    }
+
+    boardEl.innerHTML = '';
+    data.works.forEach(w => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.cat = w.course;
+      const newBadge = (w.is_new || isRecent(w.date)) ? '<span class="new-badge">NEW</span>' : '';
+      const link = 'student-portfolio-individual.html?id=' + encodeURIComponent(w.share_token) + '&work=' + encodeURIComponent(w.work_id);
+      card.innerHTML =
+        '<div class="thumb"><span class="featured-badge">★ 우수작품</span>작품 이미지' + newBadge + '</div>' +
+        '<span class="tag ' + w.course + '">' + w.course_label + '</span>' +
+        '<h3>' + w.title + '</h3>' +
+        '<p class="student">' + w.grade + ' · ' + w.student_masked + '</p>' +
+        '<p class="desc">' + w.desc + '</p>' +
+        '<div class="footer-row"><span>' + w.date + '</span><a class="view" href="' + link + '">자세히 보기</a></div>';
+      boardEl.appendChild(card);
+    });
+
+    const buttons = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.card');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        cards.forEach(card => {
+          card.style.display = (filter === 'all' || card.dataset.cat === filter) ? '' : 'none';
+        });
+      });
+    });
+  }
+
+  loadBoard();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,77 @@
+{
+  "updated": "2026.07.24",
+  "works": [
+    {
+      "course": "python",
+      "course_label": "파이썬",
+      "title": "거북이로 그린 만화경 패턴",
+      "student_masked": "김OO 학생",
+      "grade": "초등 5학년",
+      "desc": "turtle 모듈을 활용해 반복문으로 대칭 패턴을 그려낸 작품입니다.",
+      "date": "2026.07.20",
+      "is_new": true,
+      "share_token": "k7m2xq9pLd",
+      "work_id": "W101"
+    },
+    {
+      "course": "video",
+      "course_label": "영상 편집",
+      "title": "우리 동네 소개 브이로그",
+      "student_masked": "김OO 학생",
+      "grade": "초등 5학년",
+      "desc": "직접 촬영한 영상을 컷 편집하고 자막을 넣어 완성한 소개 영상입니다.",
+      "date": "2026.06.18",
+      "is_new": false,
+      "share_token": "k7m2xq9pLd",
+      "work_id": "W103"
+    },
+    {
+      "course": "office",
+      "course_label": "오피스 활용",
+      "title": "수행평가용 독서 발표 자료",
+      "student_masked": "김OO 학생",
+      "grade": "초등 5학년",
+      "desc": "애니메이션과 도형을 활용해 책 내용을 요약한 발표 슬라이드를 제작했습니다.",
+      "date": "2026.05.12",
+      "is_new": false,
+      "share_token": "k7m2xq9pLd",
+      "work_id": "W105"
+    },
+    {
+      "course": "ai",
+      "course_label": "AI 활용",
+      "title": "AI로 만든 우리 반 캐릭터",
+      "student_masked": "이OO 학생",
+      "grade": "초등 6학년",
+      "desc": "AI 이미지 생성 도구로 자신만의 캐릭터를 디자인하고, 원하는 스타일을 설명하는 프롬프트 작성을 연습했습니다.",
+      "date": "2026.06.28",
+      "is_new": true,
+      "share_token": "9htRz3wQ2m",
+      "work_id": "W201"
+    },
+    {
+      "course": "block",
+      "course_label": "블록 코딩",
+      "title": "엔트리로 만든 미로 탈출 게임",
+      "student_masked": "이OO 학생",
+      "grade": "초등 6학년",
+      "desc": "조건문과 반복문을 사용해 캐릭터가 미로를 탈출하는 게임을 완성했습니다.",
+      "date": "2026.05.15",
+      "is_new": false,
+      "share_token": "9htRz3wQ2m",
+      "work_id": "W202"
+    },
+    {
+      "course": "digital",
+      "course_label": "디지털 리터러시",
+      "title": "안전한 인터넷 사용법 포스터",
+      "student_masked": "이OO 학생",
+      "grade": "초등 6학년",
+      "desc": "저작권과 개인정보 보호를 주제로 조사하고 발표 포스터를 제작했습니다.",
+      "date": "2026.04.03",
+      "is_new": false,
+      "share_token": "9htRz3wQ2m",
+      "work_id": "W204"
+    }
+  ]
+}
